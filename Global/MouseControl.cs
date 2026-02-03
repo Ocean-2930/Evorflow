@@ -4,28 +4,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MouseControl : MonoBehaviour
+public class MouseControl : SceneSingleton<MouseControl>
 {
-    public static MouseControl inst
-    {
-        get
-        {
-            if (instance != null)
-            {
-                return instance;
-            }
-
-            GameObject temp = GameObject.Find("MouseControl");
-
-            if (temp == null)
-            {
-                return null;
-            }
-
-            instance = temp.GetComponent<MouseControl>();
-            return instance;
-        }
-    }
+    public override string className => "MouseControl";
 
     public static MouseControl instance;
 

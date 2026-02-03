@@ -1,28 +1,9 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MousePopup : MonoBehaviour
+public class MousePopup : SceneSingleton<MousePopup>
 {
-    public static MousePopup inst
-    {
-        get
-        {
-            if (instance != null)
-            {
-                return instance;
-            }
-
-            GameObject temp = GameObject.Find("MousePopup");
-
-            if (temp == null)
-            {
-                return null;
-            }
-
-            instance = temp.GetComponent<MousePopup>();
-            return instance;
-        }
-    }
+    public override string className => "MousePopup";
 
     public static MousePopup instance;
 
