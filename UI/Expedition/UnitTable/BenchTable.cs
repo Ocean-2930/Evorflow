@@ -15,7 +15,6 @@ public class BenchTable : CustomMouseInterface
 
     private float cardSize { get { return unitCard.GetComponent<RectTransform>().sizeDelta.x; } }
     private bool openParty = true;
-    private bool popup = false;
 
     void Start()
     {
@@ -123,13 +122,5 @@ public class BenchTable : CustomMouseInterface
     public override void OnExit()
     {
         MousePopup.inst.CleanPopup();
-    }
-
-    public override void OnLeftClick()
-    {
-        float cx = gameObject.GetComponent<RectTransform>().anchoredPosition.x;
-        gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(cx, (popup ? -720 : -280), 0);
-        partyTable.SetActive(!popup && openParty);
-        popup = !popup;
     }
 }
