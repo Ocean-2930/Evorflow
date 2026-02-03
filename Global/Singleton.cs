@@ -23,3 +23,43 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
 
     public abstract string className { get; }
 }
+
+public abstract class SceneSingleton<T> : MonoBehaviour where T : SceneSingleton<T>
+{
+    [SerializeField] private bool pre_made = false;
+
+    private static T instance;
+
+    public static T inst
+    {
+        get
+        {
+            if (instance == null)
+            {
+                GameObject obj = new GameObject();
+                instance = obj.AddComponent<T>();
+                obj.name = instance.className;
+            }
+
+            return instance;
+        }
+    }
+
+    public abstract string className { get; }
+
+    private void Awake()
+    {
+        if (pre_made)
+        {
+            instance = this as T;
+        }
+    }
+
+    protected virtual void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+}
