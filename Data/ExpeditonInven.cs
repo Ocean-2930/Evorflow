@@ -8,7 +8,7 @@ public class ExpeditonInven : Singleton<ExpeditonInven>
     public override string className { get { return "ExpeditionInven"; } }
     
     public Unit[] units = new Unit[5];
-    public int bagSize = 30;
+    public int bagSize = 15;
     public ItemInstList items = new ItemInstList();
 
     public void AddItem(ItemInst getItem)

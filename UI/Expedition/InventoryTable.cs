@@ -42,8 +42,8 @@ public class InventoryTable : CustomMouseInterface
             buff.transform.SetParent(iconHolder.transform);
 
             Vector3 pos = Vector3.zero;
-            pos.x = i % 11 * 120 - 600;
-            pos.y = -i / 11 * 120 + 120;
+            pos.x = i % 5 * 120 - 240;
+            pos.y = - i / 5 * 120 + 120;
             buff.GetComponent<RectTransform>().anchoredPosition = pos;
 
             inv.Add(buff);

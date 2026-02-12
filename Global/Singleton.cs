@@ -29,11 +29,17 @@ public abstract class SceneSingleton<T> : MonoBehaviour where T : SceneSingleton
     [SerializeField] private bool pre_made = false;
 
     private static T instance;
+    private static bool blockInst = false;
 
     public static T inst
     {
         get
         {
+            if (blockInst)
+            {
+                return null;
+            }
+
             if (instance == null)
             {
                 GameObject obj = new GameObject();
@@ -55,8 +61,15 @@ public abstract class SceneSingleton<T> : MonoBehaviour where T : SceneSingleton
         }
     }
 
+    private void OnApplicationQuit()
+    {
+        blockInst = true;
+    }
+
     protected virtual void OnDestroy()
     {
+        blockInst = true;
+
         if (instance == this)
         {
             instance = null;
