@@ -28,7 +28,7 @@ public class UnitCard_Scenario : UnitCard
         cardside = !cardside;
     }
 
-    public override void OnLeftClick()
+    public void OnLeftClick()
     {
         if (!cardside)
         {
@@ -53,7 +53,7 @@ public class UnitCard_Scenario : UnitCard
         benchTable.SwitchParty(unit);
     }
 
-    public override void OnRightClick()
+    public void OnRightClick()
     {
         if (!checkMark.activeInHierarchy)
         {

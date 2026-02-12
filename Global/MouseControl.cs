@@ -11,9 +11,9 @@ public class MouseControl : SceneSingleton<MouseControl>
     public static MouseControl instance;
 
     [SerializeField] private GameObject sceneCanvas;
-    private List<CustomMouseInterface> customMCList = new List<CustomMouseInterface>();
-    private CustomMouseInterface currentFocus = null;
-    private CustomMouseInterface grabObject;
+    private List<CustomMouseTrigger> customMCList = new List<CustomMouseTrigger>();
+    private CustomMouseTrigger currentFocus = null;
+    private CustomMouseTrigger grabObject;
 
     void Update()
     {
@@ -35,7 +35,7 @@ public class MouseControl : SceneSingleton<MouseControl>
             }
         }
 
-        List<CustomMouseInterface> candidate = new List<CustomMouseInterface>();
+        List<CustomMouseTrigger> candidate = new List<CustomMouseTrigger>();
         for (int i = customMCList.Count - 1; 0 <= i; i--)
         {
             if (customMCList[i] == grabObject)
@@ -54,7 +54,7 @@ public class MouseControl : SceneSingleton<MouseControl>
             }
         }
 
-        CustomMouseInterface focus;
+        CustomMouseTrigger focus;
         if (candidate.Count == 0)
         {
             focus = null;
@@ -111,13 +111,13 @@ public class MouseControl : SceneSingleton<MouseControl>
         }
     }
 
-    private CustomMouseInterface FindCMI(Transform tf, List<CustomMouseInterface> cmiList)
+    private CustomMouseTrigger FindCMI(Transform tf, List<CustomMouseTrigger> cmiList)
     {
         if (tf.childCount != 0)
         {
             for (int i = tf.childCount - 1; 0 <= i; i--)
             {
-                CustomMouseInterface childCMI = FindCMI(tf.GetChild(i), cmiList);
+                CustomMouseTrigger childCMI = FindCMI(tf.GetChild(i), cmiList);
                 if (childCMI != null)
                 {
                     return childCMI;
@@ -125,7 +125,7 @@ public class MouseControl : SceneSingleton<MouseControl>
             }
         }
 
-        CustomMouseInterface myCMI = tf.GetComponent<CustomMouseInterface>();
+        CustomMouseTrigger myCMI = tf.GetComponent<CustomMouseTrigger>();
         if (myCMI != null && cmiList.Contains(myCMI))
         {
             return myCMI;
@@ -134,12 +134,12 @@ public class MouseControl : SceneSingleton<MouseControl>
         return null;
     }
 
-    public void Register(CustomMouseInterface customMC)
+    public void Register(CustomMouseTrigger customMC)
     {
         customMCList.Add(customMC);
     }
 
-    public void Grab(CustomMouseInterface obj)
+    public void Grab(CustomMouseTrigger obj)
     {
         grabObject = obj;
 
@@ -150,7 +150,7 @@ public class MouseControl : SceneSingleton<MouseControl>
         }
     }
 
-    public void Dismiss(CustomMouseInterface customMC)
+    public void Dismiss(CustomMouseTrigger customMC)
     {
         customMCList.Remove(customMC);
     }

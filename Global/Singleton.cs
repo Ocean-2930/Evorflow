@@ -26,8 +26,6 @@ public abstract class Singleton<T> : MonoBehaviour where T : Singleton<T>
 
 public abstract class SceneSingleton<T> : MonoBehaviour where T : SceneSingleton<T>
 {
-    [SerializeField] private bool pre_made = false;
-
     private static T instance;
     private static bool blockInst = false;
 
@@ -42,9 +40,14 @@ public abstract class SceneSingleton<T> : MonoBehaviour where T : SceneSingleton
 
             if (instance == null)
             {
-                GameObject obj = new GameObject();
-                instance = obj.AddComponent<T>();
-                obj.name = instance.className;
+                instance = FindFirstObjectByType<T>();
+
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject();
+                    instance = obj.AddComponent<T>();
+                    obj.name = instance.className;
+                }
             }
 
             return instance;
@@ -52,14 +55,6 @@ public abstract class SceneSingleton<T> : MonoBehaviour where T : SceneSingleton
     }
 
     public abstract string className { get; }
-
-    private void Awake()
-    {
-        if (pre_made)
-        {
-            instance = this as T;
-        }
-    }
 
     private void OnApplicationQuit()
     {

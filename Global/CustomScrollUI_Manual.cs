@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class CustomScrollUI_Manual : CustomMouseInterface
+public class CustomScrollUI_Manual : MonoBehaviour, ICustomMouseInterface
 {
     [System.Serializable]
     private struct SerialField
@@ -45,7 +45,7 @@ public class CustomScrollUI_Manual : CustomMouseInterface
     private float contentlen = 0.0f;
     private float position = 0.0f;
 
-    public override void OnHover()
+    public void OnHover()
     {
         float scroll = Mouse.current.scroll.ReadValue().y;
         if (0 < scroll)

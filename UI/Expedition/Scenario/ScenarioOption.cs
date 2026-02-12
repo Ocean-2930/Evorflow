@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OptionBox : CustomMouseInterface
+public class OptionBox : MonoBehaviour, ICustomMouseInterface
 {
     [SerializeField] private GameObject maskField;
     [SerializeField] private GameObject textField;
@@ -23,17 +23,17 @@ public class OptionBox : CustomMouseInterface
         tmp.text = text;
     }
 
-    public override void OnHover()
+    public void OnHover()
     {
         maskField.GetComponent<Image>().color = 0x3C3C3C.FromHex();
     }
 
-    public override void OnExit()
+    public void OnExit()
     {
         maskField.GetComponent<Image>().color = 0x000000.FromHex();
     }
 
-    public override void OnLeftClick()
+    public void OnLeftClick()
     {
         reportTo.Option(optionIndex);
     }

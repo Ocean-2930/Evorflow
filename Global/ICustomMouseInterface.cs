@@ -2,7 +2,19 @@
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
-public class CustomMouseInterface : MonoBehaviour
+public interface ICustomMouseInterface
+{
+    public void OnEnter() { }
+    public void OnHover() { }
+    public void OnExit() { }
+    public void OnRightClick() { }
+    public void OnLeftClick() { }
+    public void OnDragRelease() { }
+    public void OnDragRecieve(GameObject obj) { }
+}
+
+/*
+public class CustomMouseTrigger : MonoBehaviour
 {
     public Vector2 LD
     {
@@ -64,11 +76,11 @@ public class CustomMouseInterface : MonoBehaviour
     }
 }
 
-public class CustomMouseComponent : CustomMouseInterface
+public class CustomMouseComponent : CustomMouseTrigger
 {
-    private ICustomMouseInterface target;
+    private ICustomMouseTrigger target;
 
-    public void Initialize(ICustomMouseInterface input)
+    public void Initialize(ICustomMouseTrigger input)
     {
         target = input;
     }
@@ -82,7 +94,7 @@ public class CustomMouseComponent : CustomMouseInterface
     public override void OnDragRecieve(GameObject obj) { target.OnDragRecieve(obj); }
 }
 
-public interface ICustomMouseInterface
+public interface ICustomMouseTrigger
 {
     public void OpenInterface(GameObject obj)
     {
@@ -98,6 +110,7 @@ public interface ICustomMouseInterface
     public virtual void OnDragRelease() { }
     public virtual void OnDragRecieve(GameObject obj) { }
 }
+*/
 
 /*
 public abstract class Dragable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler

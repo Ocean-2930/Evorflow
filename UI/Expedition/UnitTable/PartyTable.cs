@@ -9,12 +9,6 @@ public partial class PartyTable : TableUI, ICustomMouseInterface
     [SerializeField] private GameObject benchTable;
     [SerializeField] private GameObject statPopup;
 
-    private void Awake()
-    {
-        ICustomMouseInterface k = this;
-        k.OpenInterface(gameObject);
-    }
-
     public override bool AddUnit(Unit inUnit)
     {
         if (FindToken(inUnit) != null) { return false; }

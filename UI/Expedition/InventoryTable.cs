@@ -3,36 +3,14 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class InventoryTable : CustomMouseInterface
+public class InventoryTable : SceneSingleton<InventoryTable>
 {
-    public static InventoryTable inst
-    {
-        get
-        {
-            if (instance != null)
-            {
-                return instance;
-            }
-
-            GameObject temp = GameObject.Find("InventoryTable");
-
-            if (temp == null)
-            {
-                return null;
-            }
-
-            instance = temp.GetComponent<InventoryTable>();
-            return instance;
-        }
-    }
-
-    public static InventoryTable instance;
+    public override string className => "InventoryTable";
 
     [SerializeField] private GameObject iconHolder;
     [SerializeField] private GameObject itemIcon;
 
     private List<GameObject> inv = new List<GameObject>();
-    private bool popup = false;
 
     void Start()
     {
@@ -50,12 +28,6 @@ public class InventoryTable : CustomMouseInterface
         }
 
         UpdateItems();
-    }
-
-    public override void OnLeftClick()
-    {
-        gameObject.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, (popup ? 720 : 280), 0);
-        popup = !popup;
     }
 
     public void UpdateItems()

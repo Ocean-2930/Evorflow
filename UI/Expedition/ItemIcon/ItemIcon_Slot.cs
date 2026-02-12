@@ -42,12 +42,12 @@ public class UnitItemSlot : ItemIcon_Base
         ResetSlot();
     }
 
-    public override void OnLeftClick()
+    public void OnLeftClick()
     {
         RemoveItem();
     }
 
-    public override void OnDragRecieve(GameObject obj)
+    public void OnDragRecieve(GameObject obj)
     {
         ItemIcon_Grab recieve = obj.GetComponent<ItemIcon_Grab>();
 

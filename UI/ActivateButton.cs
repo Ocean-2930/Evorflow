@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-public class ActivateButton : CustomMouseInterface
+public class ActivateButton : MonoBehaviour, ICustomMouseInterface
 {
     [SerializeField] private GameObject[] gameObjects = new GameObject[0];
     private bool active = false;
 
-    public override void OnLeftClick()
+    public void OnLeftClick()
     {
         active = !active;
 

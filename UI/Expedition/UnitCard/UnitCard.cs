@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
 
-public class UnitCard : CustomMouseInterface
+public class UnitCard : MonoBehaviour, ICustomMouseInterface
 {
     [SerializeField] protected GameObject cardIllust;
     [SerializeField] protected GameObject itemSlot;
@@ -32,14 +32,14 @@ public class UnitCard : CustomMouseInterface
 
     
 
-    public override void OnEnter()
+    public void OnEnter()
     {
         GameObject obj = Instantiate(statPopup, Vector3.zero, Quaternion.identity);
         obj.GetComponent<StatusField>().UpdateStatus(unit);
         MousePopup.inst.ViewPopup(obj);
     }
 
-    public override void OnExit()
+    public void OnExit()
     {
         MousePopup.inst.CleanPopup();
     }

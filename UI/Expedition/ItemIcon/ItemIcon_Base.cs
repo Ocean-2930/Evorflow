@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemIcon_Base : CustomMouseInterface
+public class ItemIcon_Base : MonoBehaviour, ICustomMouseInterface
 {
     public ItemInst itemInstance;
     
@@ -39,12 +39,12 @@ public class ItemIcon_Base : CustomMouseInterface
         itemInstance = null;
     }
 
-    public override void OnEnter()
+    public virtual void OnEnter()
     {
-        base.OnEnter();
+        Debug.Log("ItemIconBase not coded");
     }
 
-    public override void OnExit()
+    public virtual void OnExit()
     {
         MousePopup.inst.CleanPopup();
     }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class BenchTable : CustomMouseInterface
+public class BenchTable : MonoBehaviour, ICustomMouseInterface
 {
     [SerializeField] private GameObject partyTable = null;
     [SerializeField] private GameObject cardHolder = null;
@@ -112,14 +112,14 @@ public class BenchTable : CustomMouseInterface
         }
     }
 
-    public override void OnEnter()
+    public void OnEnter()
     {
         GameObject obj = Instantiate(statPopup, Vector3.zero, Quaternion.identity);
         obj.GetComponent<StatusField>().UpdateStatus(benchTableData);
         MousePopup.inst.ViewPopup(obj);
     }
 
-    public override void OnExit()
+    public void OnExit()
     {
         MousePopup.inst.CleanPopup();
     }

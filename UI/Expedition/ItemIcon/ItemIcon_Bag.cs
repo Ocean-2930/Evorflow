@@ -10,7 +10,7 @@ public class ItemIcon_Bag : ItemIcon_Base
     private GameObject popupInstance;
     private int grabAmount = 1;
 
-    public override void OnLeftClick()
+    public void OnLeftClick()
     {
         if(itemInstance == null)
         {
@@ -36,10 +36,10 @@ public class ItemIcon_Bag : ItemIcon_Base
         obj.GetComponent<ItemIcon_Grab>().SetItem(grabItem);
         obj.GetComponent<ItemIcon_Grab>().bagInst = itemInstance;
         obj.GetComponent<CanvasGroup>().alpha = 0.4f;
-        MouseControl.inst.Grab(obj.GetComponent<ItemIcon_Grab>());
+        MouseControl.inst.Grab(obj.GetComponent<CustomMouseTrigger>());
     }
 
-    public override void OnRightClick()
+    public void OnRightClick()
     {
         if (itemInstance == null)
         {
@@ -63,7 +63,7 @@ public class ItemIcon_Bag : ItemIcon_Base
         MousePopup.inst.ViewPopup(popupInstance);
     }
 
-    public override void OnHover()
+    public void OnHover()
     {
         if(popupInstance == null)
         {

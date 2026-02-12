@@ -10,7 +10,7 @@ public class ItemIcon_Grab : ItemIcon_Base
         InventoryTable.inst.UpdateItems();
     }
 
-    public override void OnDragRelease()
+    public void OnDragRelease()
     {
         Destroy(gameObject);
     }
