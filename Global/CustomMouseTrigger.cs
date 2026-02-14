@@ -33,7 +33,7 @@ public class CustomMouseTrigger : MonoBehaviour
         }
     }
 
-    public bool CheckPos(Vector2 screenPos)
+    public virtual bool CheckPos(Vector2 screenPos)
     {
         return RectTransformUtility.RectangleContainsScreenPoint(RectTrans, screenPos, null);
     }
