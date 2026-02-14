@@ -15,6 +15,21 @@ public enum Language
 public class ScenarioText : MonoBehaviour
 {
     [SerializeField] private GameObject optionPin;
+    private RectTransform _optionTransform;
+    private RectTransform optionTransform
+    {
+        get
+        {
+            if(_optionTransform != null)
+            {
+                return _optionTransform;
+            }
+
+            _optionTransform = optionPin.GetComponent<RectTransform>();
+            return _optionTransform;
+        }
+    }
+
     [SerializeField] private GameObject textBox;
     [SerializeField] private GameObject optionBox;
     [SerializeField] private GameObject scenarioTable;
@@ -23,9 +38,8 @@ public class ScenarioText : MonoBehaviour
     private int optionPipe = -1;
 
     private GameObject openTable;
-    private CustomScrollUI_Manual _scrollUI;
-    private bool userUpdate = false;
 
+    private CustomScrollUI_Manual _scrollUI;
     private CustomScrollUI_Manual scrollUI
     {
         get
@@ -52,18 +66,17 @@ public class ScenarioText : MonoBehaviour
 
     private IEnumerator ScenarioLoop(Scenario first)
     {
-        RectTransform opTransform = optionPin.GetComponent<RectTransform>();
         ScenarioFlow sflow = new ScenarioFlow(first);
 
         while (!sflow.scenarioEnd)
         {
             switch(sflow.scenarioType)
             {
-                case Scenario.ScenarioType.option:
-                    yield return ScenarioOption(opTransform, sflow);
+                case ScenarioType.General:
+                    yield return ScenarioGeneral(sflow);
                     break;
-                case Scenario.ScenarioType.party:
-                    yield return ScenarioParty(opTransform, sflow);
+                case ScenarioType.Table:
+                    yield return ScenarioTable(sflow);
                     break;
                 default:
                     break;
@@ -73,27 +86,35 @@ public class ScenarioText : MonoBehaviour
         scenarioLoop = null;
     }
 
-    private IEnumerator ScenarioOption(RectTransform opTransform, ScenarioFlow sflow)
+    private IEnumerator ScenarioGeneral(ScenarioFlow sflow)
     {
-        AddTextBox(sflow.currentScenario.scenarioText);
+        Scenario_General scenario = (Scenario_General)sflow.currentScenario;
+
+        AddTextBox(scenario.GetScript());
         optionPipe = -1;
 
-        OpenOptions(opTransform, sflow.currentScenario.optionText);
+        string[] options = scenario.GetOptions(sflow);
+        OpenOptions(options);
 
         yield return new WaitUntil(() => optionPipe != -1);
-        CleanOptions(opTransform);
-        sflow.Proceed(optionPipe);
+        
+        CleanOptions();
+        sflow.Proceed(((options.Length != 0) ? options[optionPipe] : ""));
     }
 
-    private IEnumerator ScenarioParty(RectTransform opTransform, ScenarioFlow sflow)
+    private IEnumerator ScenarioTable(ScenarioFlow sflow)
     {
-        AddTextBox(sflow.currentScenario.scenarioText);
+        Scenario_Table scenario = (Scenario_Table)sflow.currentScenario;
+
+        AddTextBox(scenario.GetScript());
         optionPipe = -1;
 
         openTable = Instantiate(scenarioTable, Vector3.zero, Quaternion.identity);        
         scrollUI.AddContent(openTable);
-        //link table
 
+
+        //link table
+        /*
         ScenarioTable sTable = openTable.GetComponent<ScenarioTable>();
         while (true)
         {
@@ -120,9 +141,11 @@ public class ScenarioText : MonoBehaviour
 
         //cut connection
         sflow.Proceed(optionPipe);
+        */
+        yield return null;
     }
 
-    private void OpenOptions(RectTransform opTransform, string[] inoptions)
+    private void OpenOptions(string[] inoptions)
     {
         string[] options;
         if (inoptions.Length == 0) { options = new string[1]; options[0] = "No Text"; }
@@ -135,17 +158,17 @@ public class ScenarioText : MonoBehaviour
             GameObject obj = Instantiate(optionBox);
             obj.GetComponent<OptionBox>().Initialize(this, i, optionText);
             RectTransform rect = obj.GetComponent<RectTransform>();
-            rect.SetParent(opTransform);
+            rect.SetParent(optionTransform);
             rect.anchoredPosition = new Vector3(0, ypos, 0);
             ypos -= optionSpacing;
         }
     }
 
-    private void CleanOptions(RectTransform opTransform)
+    private void CleanOptions()
     {
-        for (int i = opTransform.childCount - 1; i >= 0; i--)
+        for (int i = optionTransform.childCount - 1; i >= 0; i--)
         {
-            Destroy(opTransform.GetChild(i).gameObject);
+            Destroy(optionTransform.GetChild(i).gameObject);
         }
     }
 

@@ -22,7 +22,7 @@ public class PunchTest : MonoBehaviour
         if(punch)
         {
             punch = false;
-            gameObject.GetComponent<ScenarioText>().StartScenario(ScenarioCloud.inst.scenarioList["1"]);
+            gameObject.GetComponent<ScenarioText>().StartScenario(ScenarioCloud.inst.scenarioList["001"]);
             TryFunc();            
         }
     }

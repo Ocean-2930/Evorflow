@@ -7,6 +7,8 @@ public class ScenarioFlow
     private LinkedList<Scenario> pipeline = new LinkedList<Scenario>();
     private LinkedListNode<Scenario> pipelineFlag;
     private List<string> tags = new List<string>();
+
+    private Table table;
     private List<string> items = new List<string>();
 
     public ScenarioFlow(Scenario first)
@@ -19,22 +21,38 @@ public class ScenarioFlow
 
     public Scenario currentScenario { get { return pipeline.First.Value; } }
 
-    public Scenario.ScenarioType scenarioType
+    public ScenarioType scenarioType
     {
         get
         {
-            if (pipeline.First.Value == null)
-            {
-                return Scenario.ScenarioType.option;
-            }
-
-            return pipeline.First.Value.type;
+            return currentScenario.scenarioType;
         }
     }
 
-    public void Proceed(int option)
+    public void ConnectTable(Table t)
     {
-        Pipeline(currentScenario.Choice(this, option));
+        table = t;
+    }
+
+    public void Proceed()
+    {
+        Proceed("");
+    }
+
+    public void Proceed(string option)
+    {
+        switch (currentScenario.scenarioType)
+        {
+            case ScenarioType.General:
+                ((Scenario_General)currentScenario).ChoseOption(this, option);
+                break;
+            case ScenarioType.Table:
+                ((Scenario_Table)currentScenario).ChoseOption(this, table, option);
+                break;
+            default:
+                break;
+        }
+
         pipeline.RemoveFirst();
         pipelineFlag = pipeline.First;
     }
