@@ -12,7 +12,7 @@ public enum Language
     None = 2
 }
 
-public class ScenarioText : CustomScrollUI_Manual
+public class ScenarioText : MonoBehaviour
 {
     [SerializeField] private GameObject optionPin;
     [SerializeField] private GameObject textBox;
@@ -23,7 +23,22 @@ public class ScenarioText : CustomScrollUI_Manual
     private int optionPipe = -1;
 
     private GameObject openTable;
+    private CustomScrollUI_Manual _scrollUI;
     private bool userUpdate = false;
+
+    private CustomScrollUI_Manual scrollUI
+    {
+        get
+        {
+            if (_scrollUI != null)
+            {
+                return _scrollUI;
+            }
+            
+            _scrollUI = gameObject.GetComponent<CustomScrollUI_Manual>();
+            return _scrollUI;
+        }
+    }
 
     public void StartScenario(Scenario first)
     {
@@ -76,7 +91,7 @@ public class ScenarioText : CustomScrollUI_Manual
         optionPipe = -1;
 
         openTable = Instantiate(scenarioTable, Vector3.zero, Quaternion.identity);        
-        AddContent(openTable);
+        scrollUI.AddContent(openTable);
         //link table
 
         ScenarioTable sTable = openTable.GetComponent<ScenarioTable>();
@@ -138,9 +153,9 @@ public class ScenarioText : CustomScrollUI_Manual
     {
         GameObject obj = Instantiate(textBox, Vector3.zero, Quaternion.identity);
         RectTransform rect = obj.GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector3(windowTransform.rect.width, rect.sizeDelta.y, 0);
+        rect.sizeDelta = new Vector3(scrollUI.windowTransform.rect.width, rect.sizeDelta.y, 0);
         obj.GetComponent<TextBox>().UpdateText(instr);
-        AddContent(obj);
-        ToBottom();
+        scrollUI.AddContent(obj);
+        scrollUI.ToBottom();
     }
 }

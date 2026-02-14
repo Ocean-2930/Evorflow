@@ -3,44 +3,35 @@ using UnityEngine.InputSystem;
 
 public class CustomScrollUI_Manual : MonoBehaviour, ICustomMouseInterface
 {
-    [System.Serializable]
-    private struct SerialField
-    {
-        public GameObject windowObj;
-        public GameObject scrollObj;
-        public float padding;
-        public float scrollSpeed;
-    }
+    [SerializeField] private GameObject _windowObj;
+    [SerializeField] private GameObject _scrollObj;
+    [SerializeField] private float padding;
+    [SerializeField] private float scrollSpeed;
 
-    [SerializeField] private SerialField scrollProperty = new SerialField();
+    public GameObject windowObj => _windowObj;
+    public GameObject scrollObj => _scrollObj;
 
-    protected GameObject windowObj => scrollProperty.windowObj;
     private RectTransform buff_windowTransform;
-    protected RectTransform windowTransform
+    public RectTransform windowTransform
     {
         get
         {
             if (buff_windowTransform != null) { return buff_windowTransform; }
-            buff_windowTransform = windowObj.GetComponent<RectTransform>();
+            buff_windowTransform = _windowObj.GetComponent<RectTransform>();
             return buff_windowTransform;
         }
     }
 
-
-    protected GameObject scrollObj => scrollProperty.scrollObj;
     private RectTransform buff_scrollTransform;
     protected RectTransform scrollTransform
     {
         get
         {
             if (buff_scrollTransform != null) { return buff_scrollTransform; }
-            buff_scrollTransform = scrollObj.GetComponent<RectTransform>();
+            buff_scrollTransform = _scrollObj.GetComponent<RectTransform>();
             return buff_scrollTransform;
         }
     }
-
-    protected float padding => scrollProperty.padding;
-    protected float scrollSpeed => scrollProperty.scrollSpeed;
 
     private float contentlen = 0.0f;
     private float position = 0.0f;
