@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class UnitCard_Scenario : UnitCard
+public class UnitCard_Scenario : UnitCard, ICustomMouseInterface
 {
     [SerializeField] private GameObject checkMark;
     private static BenchTable benchTable;

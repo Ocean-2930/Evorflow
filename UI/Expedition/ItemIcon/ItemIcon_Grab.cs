@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ItemIcon_Grab : ItemIcon_Base
+public class ItemIcon_Grab : ItemIcon_Base, ICustomMouseInterface
 {
     public ItemInst bagInst;
 

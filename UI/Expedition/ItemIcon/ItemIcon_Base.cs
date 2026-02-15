@@ -41,7 +41,7 @@ public class ItemIcon_Base : MonoBehaviour, ICustomMouseInterface
 
     public virtual void OnEnter()
     {
-        Debug.Log("ItemIconBase not coded");
+        
     }
 
     public virtual void OnExit()

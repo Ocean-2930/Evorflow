@@ -2,7 +2,7 @@
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class ItemIcon_Bag : ItemIcon_Base
+public class ItemIcon_Bag : ItemIcon_Base, ICustomMouseInterface
 {
     [SerializeField] private GameObject grabObject;
     [SerializeField] private GameObject amountPopup;

@@ -66,47 +66,38 @@ public class ScenarioText : MonoBehaviour
 
     private IEnumerator ScenarioLoop(Scenario first)
     {
-        ScenarioFlow sflow = new ScenarioFlow(first);
+        ScenarioFlow sflow = new ScenarioFlow(this, first);
 
         while (!sflow.scenarioEnd)
         {
-            switch(sflow.scenarioType)
-            {
-                case ScenarioType.General:
-                    yield return ScenarioGeneral(sflow);
-                    break;
-                case ScenarioType.Table:
-                    yield return ScenarioTable(sflow);
-                    break;
-                default:
-                    break;
-            }
+            IEnumerator enumerator = sflow.GetEnumerator();
+            yield return enumerator;
+            sflow.SafeProceed();
         }
         
         scenarioLoop = null;
     }
 
-    private IEnumerator ScenarioGeneral(ScenarioFlow sflow)
+    public IEnumerator ScenarioGeneral(ScenarioFlow sflow)
     {
-        Scenario_General scenario = (Scenario_General)sflow.currentScenario;
+        Scenario_Scriptable scenario = (Scenario_Scriptable)sflow.currentScenario;
 
         AddTextBox(scenario.GetScript());
         optionPipe = -1;
 
-        string[] options = scenario.GetOptions(sflow);
+        string[] options = sflow.GetOptions();
         OpenOptions(options);
 
         yield return new WaitUntil(() => optionPipe != -1);
         
         CleanOptions();
         sflow.Proceed(((options.Length != 0) ? options[optionPipe] : ""));
+        yield return null;
     }
 
-    private IEnumerator ScenarioTable(ScenarioFlow sflow)
+    public IEnumerator ScenarioTable(ScenarioFlow sflow)
     {
-        Scenario_Table scenario = (Scenario_Table)sflow.currentScenario;
-
-        AddTextBox(scenario.GetScript());
+        AddTextBox(sflow.currentScenario.GetScript());
         optionPipe = -1;
 
         openTable = Instantiate(scenarioTable, Vector3.zero, Quaternion.identity);        

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class UnitItemSlot : ItemIcon_Base
+public class UnitItemSlot : ItemIcon_Base, ICustomMouseInterface
 {
     private enum SlotType
     {

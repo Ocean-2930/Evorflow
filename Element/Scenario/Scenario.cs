@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using UnityEngine;
@@ -30,7 +31,8 @@ public class ScenarioCloud : Singleton<ScenarioCloud>
             scenarioList.Add(loadedItems[i].scenarioCode, loadedItems[i]);
         }
 
-        CSVParser parser = new CSVParser("Text/4_Expedition/nodescenario");
+        string filename = "scenario";
+        CSVParser parser = new CSVParser("Text/4_Expedition/" + filename);
         for (int i = 0; i < parser.data.Length; i++)
         {
             string line = parser.data[i];
@@ -38,12 +40,14 @@ public class ScenarioCloud : Singleton<ScenarioCloud>
             int ind = line.IndexOf(',');
             string key = line.Substring(0, ind);
 
-            if (!scenarioList.ContainsKey(key)) { continue; }
+            if (!scenarioList.ContainsKey(key))
+            {
+                Debug.Log($"!!!EventCode: {key} from {filename} CSV not found in Scriptable Objects!!!");
+                continue;
+            }
 
             scenarioList[key].AddTextData(line.Substring(ind + 1));
         }
-
-        // subscenario adder
     }
 }
 
@@ -59,16 +63,14 @@ public enum ScenarioType
     None = 7
 }
 
-public class Scenario : ScriptableObject
+public abstract class Scenario : ScriptableObject
 {
-    [SerializeField] protected string _scenarioCode;
+    public abstract string scenarioCode { get; }
 
-    public virtual string scenarioCode => _scenarioCode;
-
-    public virtual ScenarioType scenarioType { get { return ScenarioType.General; } }
+    public abstract ScenarioType scenarioType { get; }
 
     private List<string[]> textdata = new List<string[]>();
-    protected string[] textpack
+    public string[] textpack
     {
         get
         {
@@ -85,22 +87,11 @@ public class Scenario : ScriptableObject
     {
         return textpack[0];
     }
+
+    public virtual IEnumerator GetEnumerator(ScenarioFlow flow) { return null; }
 }
 
-public abstract class Scenario_General : Scenario
-{
-    public abstract string[] GetOptions(ScenarioFlow flow);
-    public abstract void ChoseOption(ScenarioFlow flow, string option);
-}
-
-public abstract class Scenario_Table : Scenario
-{
-    public override ScenarioType scenarioType => ScenarioType.Table;
-
-    public abstract string[] GetOptions(ScenarioFlow flow, Table table);
-    public abstract void ChoseOption(ScenarioFlow flow, Table table, string option);
-}
-
+#region Special Scenario
 public class Scenario_Battle : Scenario
 {
     public override string scenarioCode => "Battle";
@@ -130,6 +121,7 @@ public class Scenario_Close : Scenario
     public override string scenarioCode => "Close";
     public override ScenarioType scenarioType => ScenarioType.Close;
 }
+#endregion
 
 /*
 public class Scenario

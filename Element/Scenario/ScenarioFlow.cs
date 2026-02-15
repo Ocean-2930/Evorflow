@@ -1,25 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class ScenarioFlow
 {
-    private LinkedList<Scenario> pipeline = new LinkedList<Scenario>();
-    private LinkedListNode<Scenario> pipelineFlag;
-    private List<string> tags = new List<string>();
-
-    private Table table;
-    private List<string> items = new List<string>();
-
-    public ScenarioFlow(Scenario first)
+    public ScenarioFlow(ScenarioText stext, Scenario first)
     {
+        _stext = stext;
         pipeline.AddFirst(first);
         pipelineFlag = pipeline.First;
     }
 
-    public bool scenarioEnd { get { return pipeline.Count == 0; } }
-
-    public Scenario currentScenario { get { return pipeline.First.Value; } }
+    #region ScenarioText
+    public bool scenarioEnd
+    {
+        get
+        {
+            return pipeline.Count == 0;
+        }
+    }
 
     public ScenarioType scenarioType
     {
@@ -29,38 +30,75 @@ public class ScenarioFlow
         }
     }
 
-    public void ConnectTable(Table t)
+    public Scenario currentScenario { get { return pipeline.First.Value; } }
+
+    public IEnumerator GetEnumerator()
     {
-        table = t;
+        return currentScenario.GetEnumerator(this);
     }
 
-    public void Proceed()
+    public string[] GetOptions()
     {
-        Proceed("");
+        givenOptions = new string[0];
+
+        Scenario_Scriptable sc = (Scenario_Scriptable)currentScenario;
+        sc.GetOptions(this);
+        return givenOptions;
+    }
+
+    private bool proceeded = false;
+    public void NextScenario()
+    {
+        proceeded = true;
+
+        pipeline.RemoveFirst();
+        pipelineFlag = pipeline.First;
     }
 
     public void Proceed(string option)
     {
-        switch (currentScenario.scenarioType)
+        Scenario_Scriptable sc = (Scenario_Scriptable)currentScenario;
+        userOption = option;
+
+        sc.ChoseOption(this);
+
+        NextScenario();
+    }
+
+    public void SafeProceed()
+    {
+        if (!proceeded)
         {
-            case ScenarioType.General:
-                ((Scenario_General)currentScenario).ChoseOption(this, option);
-                break;
-            case ScenarioType.Table:
-                ((Scenario_Table)currentScenario).ChoseOption(this, table, option);
-                break;
-            default:
-                break;
+            NextScenario();
         }
 
-        pipeline.RemoveFirst();
-        pipelineFlag = pipeline.First;
+        proceeded = false;
+    }
+    #endregion
+
+    #region Scenario
+    public string[] givenOptions;
+    public string userOption;
+    public Table userTable;
+
+    private List<string> items = new List<string>();
+    private List<string> tags = new List<string>();
+
+    private ScenarioText _stext;
+    public ScenarioText scenarioText
+    {
+        get { return _stext; }
     }
 
     public void AddTag(string newTag)
     {
         tags.Add(newTag);
     }
+    #endregion
+
+    #region Scenario Pipeline
+    private LinkedList<Scenario> pipeline = new LinkedList<Scenario>();
+    private LinkedListNode<Scenario> pipelineFlag;
 
     public void Pipeline(Scenario newScenario)
     {
@@ -68,4 +106,5 @@ public class ScenarioFlow
         pipeline.AddAfter(pipelineFlag, newScenario);
         pipelineFlag = pipelineFlag.Next;
     }
+    #endregion
 }
