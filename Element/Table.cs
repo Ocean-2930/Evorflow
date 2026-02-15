@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Table : List<Unit>
+public class Table : List<UnitInst>
 {
     public int unitcnt
     {
@@ -78,7 +78,7 @@ public class Table : List<Unit>
         }
     }
 
-    public void AddUnit(Unit unit)
+    public void AddUnit(UnitInst unit)
     {
         unit.table = this;
         Add(unit);

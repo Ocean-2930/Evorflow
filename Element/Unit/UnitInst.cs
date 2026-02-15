@@ -14,7 +14,7 @@ public enum StatType
     VIT = 7
 }
 
-public class Unit
+public class UnitInst
 {
     public Table table;
         
@@ -67,12 +67,12 @@ public class Unit
     public string code;
     public Sprite illust;
 
-    public Unit()
+    public UnitInst()
     {
 
     }
 
-    public Unit(SpecialUnit unit)
+    public UnitInst(SpecialUnit unit)
     {
         code = unit.code;
         illust = unit.illust;
@@ -84,7 +84,7 @@ public class Unit
         skill3 = unit.skill3;
     }
 
-    public Unit(UnitData data)
+    public UnitInst(UnitData data)
     {
         code = data.code;
         illust = UnitCloud.inst.GetUnit(code).illust;

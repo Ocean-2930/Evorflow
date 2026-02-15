@@ -12,7 +12,7 @@ public class InvTester : MonoBehaviour
     {
         for (int i = 0; i < units.Length; i++)
         {
-            ExpeditonInven.inst.units[i] = new Unit(UnitCloud.inst.specialUnit[units[i]]);
+            ExpeditonInven.inst.units[i] = new UnitInst(UnitCloud.inst.specialUnit[units[i]]);
         }
 
         for (int i = 0; i < itemtype.Length; i++)

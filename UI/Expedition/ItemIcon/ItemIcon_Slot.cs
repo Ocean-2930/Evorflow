@@ -20,7 +20,7 @@ public class UnitItemSlot : ItemIcon_Base, ICustomMouseInterface
             return;
         }
 
-        Unit itemHolder = unitCard.GetComponent<UnitCard>().unit;
+        UnitInst itemHolder = unitCard.GetComponent<UnitCard>().unit;
         ExpeditonInven.inst.AddItem(itemInstance);
         InventoryTable.inst.UpdateItems();
         if (type == SlotType.Weapon)

@@ -6,7 +6,7 @@ public partial class PartyTable : TableUI, ICustomMouseInterface
     [SerializeField] private GameObject benchTable;
     [SerializeField] private GameObject statPopup;
 
-    public override bool AddUnit(Unit inUnit)
+    public override bool AddUnit(UnitInst inUnit)
     {
         if (FindToken(inUnit) != null) { return false; }
 
@@ -41,7 +41,7 @@ public class TableUI : MonoBehaviour
     protected List<GameObject> tokens = new List<GameObject>();
     public Table tableData = new Table();
 
-    public virtual bool AddUnit(Unit inUnit)
+    public virtual bool AddUnit(UnitInst inUnit)
     {
         if (FindToken(inUnit) != null) { return false; }
 
@@ -54,7 +54,7 @@ public class TableUI : MonoBehaviour
         return true;
     }
 
-    public bool RemoveUnit(Unit inUnit)
+    public bool RemoveUnit(UnitInst inUnit)
     {
         GameObject tToken = FindToken(inUnit);
         if (tToken == null) { return false; }
@@ -84,7 +84,7 @@ public class TableUI : MonoBehaviour
         gameObject.GetComponent<RectTransform>().sizeDelta = new Vector3(xlen, ylen, 0);
     }
 
-    protected GameObject FindToken(Unit inUnit)
+    protected GameObject FindToken(UnitInst inUnit)
     {
         for (int i = 0; i < tokens.Count; i++)
         {

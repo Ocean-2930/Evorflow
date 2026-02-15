@@ -5,7 +5,7 @@ public class PartyToken : UnitToken, ICustomMouseInterface
 {
     private GameObject benchTable;
 
-    public void Initialize(GameObject obj, Unit unit)
+    public void Initialize(GameObject obj, UnitInst unit)
     {
         benchTable = obj;
         SetUnit(unit);

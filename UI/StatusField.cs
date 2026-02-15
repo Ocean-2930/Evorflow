@@ -12,7 +12,7 @@ public class StatusField : MonoBehaviour
     [SerializeField] private GameObject AGI;
     [SerializeField] private GameObject VIT;
 
-    public void UpdateStatus(Unit unit)
+    public void UpdateStatus(UnitInst unit)
     {
         if (HP != null)
         {

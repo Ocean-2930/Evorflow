@@ -5,12 +5,12 @@ public class UnitCloud : Singleton<UnitCloud>
 {
     public override string className { get { return "UnitCloud"; } }
 
-    public Dictionary<string, UnitBase> randomUnit = new Dictionary<string, UnitBase>();
+    public Dictionary<string, Unit_Scriptable> randomUnit = new Dictionary<string, Unit_Scriptable>();
     public Dictionary<string, SpecialUnit> specialUnit = new Dictionary<string, SpecialUnit>();
 
     private void Awake()
     {
-        UnitBase[] loadedItems = Resources.LoadAll<UnitBase>("Asset/Unit/RandomUnit");
+        Unit_Scriptable[] loadedItems = Resources.LoadAll<Unit_Scriptable>("Asset/Unit/RandomUnit");
         for (int i = 0; i < loadedItems.Length; i++)
         {
             randomUnit[loadedItems[i].code] = loadedItems[i];
@@ -23,7 +23,7 @@ public class UnitCloud : Singleton<UnitCloud>
         }
     }
 
-    public UnitBase GetUnit(string code)
+    public Unit_Scriptable GetUnit(string code)
     {
         if (code[0] == 'S')
         {

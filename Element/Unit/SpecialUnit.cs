@@ -2,7 +2,7 @@
 
 [CreateAssetMenu(fileName = "SpecialUnit", menuName = "Scriptable Objects/Unit/SpecialUnit")]
 
-public class SpecialUnit : UnitBase
+public class SpecialUnit : Unit_Scriptable
 {
     public Skill baseSkill = null;
     public Skill skill1 = null;

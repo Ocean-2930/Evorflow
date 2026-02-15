@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "UnitBase", menuName = "Scriptable Objects/Unit/RandomUnit")]
-public class UnitBase : ScriptableObject
+[CreateAssetMenu(fileName = "Unit", menuName = "Scriptable Objects/Unit/RandomUnit")]
+public class Unit_Scriptable : ScriptableObject
 {
     public string code;
     public Sprite illust;

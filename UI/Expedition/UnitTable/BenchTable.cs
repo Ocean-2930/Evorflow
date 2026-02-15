@@ -31,7 +31,7 @@ public class BenchTable : MonoBehaviour, ICustomMouseInterface
         }
     }
 
-    public void AddCard(Unit unit)
+    public void AddCard(UnitInst unit)
     {
         if (4 < cards.Count)
         {
@@ -65,7 +65,7 @@ public class BenchTable : MonoBehaviour, ICustomMouseInterface
         SwitchParty(obj.GetComponent<UnitCard>().unit);
     }
 
-    public void SwitchParty(Unit tunit)
+    public void SwitchParty(UnitInst tunit)
     {
         if (!openParty) { return; }
         if (benchTableData.Contains(tunit) && !partyTableData.Contains(tunit))

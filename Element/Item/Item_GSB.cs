@@ -7,7 +7,7 @@ public class Item_GSB : Item
 
     public override bool isStatBoost { get { return true; } }
 
-    public override EnumIntArray<StatType> StatBoost(Table table, Unit unit, ItemInst itemInst, EnumIntArray<StatType> statpipe)
+    public override EnumIntArray<StatType> StatBoost(Table table, UnitInst unit, ItemInst itemInst, EnumIntArray<StatType> statpipe)
     {
         for (int i = 0; i < boost.length; i++)
         {

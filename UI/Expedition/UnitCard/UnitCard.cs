@@ -12,7 +12,7 @@ public class UnitCard : MonoBehaviour, ICustomMouseInterface
     [SerializeField] protected GameObject cardName;
     [SerializeField] protected GameObject statPopup;
 
-    public Unit unit;
+    public UnitInst unit;
 
     protected bool cardside = true;
 
@@ -22,7 +22,7 @@ public class UnitCard : MonoBehaviour, ICustomMouseInterface
         itemSlot.SetActive(false);
     }
 
-    public void SetUnit(Unit inunit)
+    public void SetUnit(UnitInst inunit)
     {
         unit = inunit;
         Image unitIllust = cardIllust.GetComponent<Image>();
