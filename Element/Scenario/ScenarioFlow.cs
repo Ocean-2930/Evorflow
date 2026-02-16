@@ -46,6 +46,12 @@ public class ScenarioFlow
         return givenOptions;
     }
 
+    public string[] GetOptions(Table t)
+    {
+        userTable = t;
+        return GetOptions();
+    }
+
     private bool proceeded = false;
     public void NextScenario()
     {

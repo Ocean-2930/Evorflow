@@ -67,6 +67,17 @@ public class TableUI : MonoBehaviour
         return true;
     }
 
+    public void CleanTable()
+    {
+        for (int i = tokens.Count-1; 0<=i; i--)
+        {
+            Destroy(tokens[i]);
+        }
+        tokens.Clear();
+        tableData = new Table();
+        ArrangeTokens();
+    }
+
     protected void ArrangeTokens()
     {
         int tokenCnt = tokens.Count;

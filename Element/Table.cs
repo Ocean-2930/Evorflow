@@ -77,10 +77,4 @@ public class Table : List<UnitInst>
             return buff;
         }
     }
-
-    public void AddUnit(UnitInst unit)
-    {
-        unit.table = this;
-        Add(unit);
-    }
 }

@@ -1,20 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class BenchTable : MonoBehaviour, ICustomMouseInterface
 {
-    [SerializeField] private GameObject partyTable = null;
     [SerializeField] private GameObject cardHolder = null;
     [SerializeField] private GameObject unitCard = null;
     [SerializeField] private GameObject statPopup = null;
+    [SerializeField] private GameObject scenarioText;
+    private ScenarioText _sText;
+    private ScenarioText sText
+    {
+        get
+        {
+            if (_sText != null)
+            {
+                return _sText;
+            }
+            _sText = scenarioText.GetComponent<ScenarioText>();
+            return _sText;
+        }
+    }
+
     [SerializeField] private float cardPadding = 75.0f;
 
     private Table benchTableData = new Table();
-    private Table partyTableData = new Table();
     private List<GameObject> cards = new List<GameObject>();
 
     private float cardSize { get { return unitCard.GetComponent<RectTransform>().sizeDelta.x; } }
-    private bool openParty = true;
 
     void Start()
     {
@@ -44,7 +57,7 @@ public class BenchTable : MonoBehaviour, ICustomMouseInterface
         cards.Add(obj);
         ArrangeCard();
 
-        benchTableData.AddUnit(obj.GetComponent<UnitCard>().unit);
+        benchTableData.Add(obj.GetComponent<UnitCard>().unit);
     }
 
     public void RemoveCard(GameObject obj)
@@ -59,26 +72,19 @@ public class BenchTable : MonoBehaviour, ICustomMouseInterface
         ArrangeCard();
     }
 
-    public void SwitchParty(GameObject obj)
-    {
-        if (!openParty) { return; }
-        SwitchParty(obj.GetComponent<UnitCard>().unit);
-    }
-
     public void SwitchParty(UnitInst tunit)
     {
-        if (!openParty) { return; }
-        if (benchTableData.Contains(tunit) && !partyTableData.Contains(tunit))
+        if (!sText.tableOpened) { return; }
+
+        if (benchTableData.Contains(tunit))
         {
-            partyTable.GetComponent<PartyTable>().AddUnit(tunit);
             benchTableData.Remove(tunit);
-            partyTableData.Add(tunit);
+            sText.AddParty(tunit);
         }
-        else if (!benchTableData.Contains(tunit) && partyTableData.Contains(tunit))
+        else if (!benchTableData.Contains(tunit))
         {
-            partyTable.GetComponent<PartyTable>().RemoveUnit(tunit);
             benchTableData.Add(tunit);
-            partyTableData.Remove(tunit);
+            sText.RemoveParty(tunit);
         }
 
         for (int i = 0; i < cards.Count; i++)
@@ -91,11 +97,14 @@ public class BenchTable : MonoBehaviour, ICustomMouseInterface
         }
     }
 
-    public void CleanBench()
+    public void CleanTable()
     {
-        for (int i = benchTableData.Count - 1; 0 <= i; i--)
+        benchTableData.Clear();
+        for (int i = 0; i < cards.Count; i++)
         {
-            SwitchParty(benchTableData[i]);
+            UnitCard_Scenario c = cards[i].GetComponent<UnitCard_Scenario>();
+            benchTableData.Add(c.unit);
+            c.ToBench();
         }
     }
 

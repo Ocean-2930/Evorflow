@@ -6,9 +6,14 @@ public class UnitCard_Scenario : UnitCard, ICustomMouseInterface
     [SerializeField] private GameObject checkMark;
     private static BenchTable benchTable;
 
+    public void ToBench()
+    {
+        checkMark.SetActive(false);
+    }
+
     public void ToggleCard()
     {
-        checkMark.SetActive(!checkMark.activeInHierarchy);
+        checkMark.SetActive(!checkMark.activeSelf);
     }
 
     public void OpenCard()

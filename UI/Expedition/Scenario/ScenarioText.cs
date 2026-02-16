@@ -4,6 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
+using static UnityEngine.InputSystem.Editor.InputActionCodeGenerator;
+using static UnityEngine.Rendering.DebugUI;
 
 public enum Language
 {
@@ -32,12 +34,40 @@ public class ScenarioText : MonoBehaviour
 
     [SerializeField] private GameObject textBox;
     [SerializeField] private GameObject optionBox;
-    [SerializeField] private GameObject scenarioTable;
+    [SerializeField] private GameObject benchTable;
+    private BenchTable _btable;
+    private BenchTable btable
+    {
+        get
+        {
+            if (_btable != null)
+            {
+                return _btable;
+            }
+            _btable = benchTable.GetComponent<BenchTable>();
+            return _btable;
+        }
+    }
+    [SerializeField] private GameObject partyTable;
+    private PartyTable _ptable;
+    private PartyTable ptable
+    {
+        get
+        {
+            if (_ptable != null)
+            {
+                return _ptable;
+            }
+            _ptable = partyTable.GetComponent<PartyTable>();
+            return _ptable;
+        }
+    }
+    public bool tableOpened { get { return partyTable.activeInHierarchy; } }
+
     [SerializeField] private float optionSpacing = 140.0f;
     private Coroutine scenarioLoop = null;
     private int optionPipe = -1;
-
-    private GameObject openTable;
+    private bool partyUpdated = false;
 
     private CustomScrollUI_Manual _scrollUI;
     private CustomScrollUI_Manual scrollUI
@@ -100,39 +130,28 @@ public class ScenarioText : MonoBehaviour
         AddTextBox(sflow.currentScenario.GetScript());
         optionPipe = -1;
 
-        openTable = Instantiate(scenarioTable, Vector3.zero, Quaternion.identity);        
-        scrollUI.AddContent(openTable);
+        OpenTable();
 
-
-        //link table
-        /*
-        ScenarioTable sTable = openTable.GetComponent<ScenarioTable>();
-        while (true)
+        
+        while(true)
         {
-            yield return new WaitUntil(() => optionPipe != -1 || userUpdate);
+            CleanOptions();
+            string[] options = sflow.GetOptions(ptable.tableData);
+            OpenOptions(options);
 
-            if(optionPipe != -1)
+            yield return new WaitUntil(() => partyUpdated || optionPipe != -1);
+
+            partyUpdated = false;
+            if (optionPipe != -1)
             {
+                sflow.Proceed(options[optionPipe]);
                 break;
-            }
-
-            if(userUpdate)
-            {
-                if(sTable.tableData.Count == 0)
-                {
-                    CleanOptions(opTransform);
-                }
-                else
-                {
-                    OpenOptions(opTransform, sflow.currentScenario.optionText);
-                }
             }
         }
 
+        CleanOptions();
+        CloseTable();
 
-        //cut connection
-        sflow.Proceed(optionPipe);
-        */
         yield return null;
     }
 
@@ -161,6 +180,38 @@ public class ScenarioText : MonoBehaviour
         {
             Destroy(optionTransform.GetChild(i).gameObject);
         }
+    }
+
+    private void OpenTable()
+    {
+        partyTable.SetActive(true);
+    }
+
+    public void AddParty(UnitInst unit)
+    {
+        if (!partyTable.activeInHierarchy)
+        {
+            return;
+        }
+        partyUpdated = true;
+        ptable.AddUnit(unit);
+    }
+
+    public void RemoveParty(UnitInst unit)
+    {
+        if (!partyTable.activeInHierarchy)
+        {
+            return;
+        }
+        partyUpdated = true;
+        ptable.RemoveUnit(unit);
+    }
+
+    private void CloseTable()
+    {
+        ptable.CleanTable();
+        btable.CleanTable();
+        partyTable.SetActive(false);
     }
 
     public void AddTextBox(string instr)
