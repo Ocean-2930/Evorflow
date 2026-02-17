@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class InvTester : MonoBehaviour
 {
     public string[] units;
-    public int[] itemtype;
+    public string[] itemtype;
     public int[] itemamount;
 
     public void StartTest()

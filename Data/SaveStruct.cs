@@ -2,7 +2,7 @@
 
 public struct ItemData
 {
-    public int code;
+    public string code;
     public int amount;
 }
 

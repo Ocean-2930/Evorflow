@@ -26,36 +26,36 @@ public class UnitInst
 
             if (baseSkill != null && baseSkill.isStatBoost)
             {
-                rarr = baseSkill.StatBoost(table, this, null, rarr);
+                rarr = baseSkill.StatBoost(rarr);
             }
             if (skill1 != null && skill1.isStatBoost)
             {
-                rarr = skill1.StatBoost(table, this, null, rarr);
+                rarr = skill1.StatBoost(rarr);
             }
             if (skill2 != null && skill2.isStatBoost)
             {
-                rarr = skill2.StatBoost(table, this, null, rarr);
+                rarr = skill2.StatBoost(rarr);
             }
             if (skill3 != null && skill3.isStatBoost)
             {
-                rarr = skill3.StatBoost(table, this, null, rarr);
+                rarr = skill3.StatBoost(rarr);
             }
 
             if (weapon != null && weapon.item.isStatBoost)
             {
-                rarr = weapon.item.StatBoost(table, this, weapon, rarr);
+                rarr = weapon.item.StatBoost(rarr);
             }
             if (armor != null && armor.item.isStatBoost)
             {
-                rarr = armor.item.StatBoost(table, this, armor, rarr);
+                rarr = armor.item.StatBoost(rarr);
             }
             if (supply_1 != null && supply_1.item.isStatBoost)
             {
-                rarr = supply_1.item.StatBoost(table, this, supply_1, rarr);
+                rarr = supply_1.item.StatBoost(rarr);
             }
             if (supply_2 != null && supply_2.item.isStatBoost)
             {
-                rarr = supply_2.item.StatBoost(table, this, supply_2, rarr);
+                rarr = supply_2.item.StatBoost(rarr);
             }
 
             return rarr + baseStat;

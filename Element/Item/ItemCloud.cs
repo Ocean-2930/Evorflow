@@ -5,7 +5,7 @@ public class ItemCloud : Singleton<ItemCloud>
 {
     public override string className { get { return "ItemCloud"; } }
 
-    public Dictionary<int, Item> itemList = new Dictionary<int, Item>();
+    public Dictionary<string, Item> itemList = new Dictionary<string, Item>();
 
     private void Awake()
     {

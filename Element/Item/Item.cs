@@ -39,18 +39,11 @@ public enum PartType
     Radiomass = 9,
     Tachyon = 10
 }
-
-public enum ItemTag
-{
-    Gun = 0
-}
 #endregion
 
 #region Item
 public abstract class Item : SkillBase
 {
-    public int code;
-    public Sprite icon;
 
     public ItemType type;
 
@@ -58,9 +51,7 @@ public abstract class Item : SkillBase
     public int stackMAXCnt = 1;
 
     public EnumIntArray<PartType> parts = new EnumIntArray<PartType>();
-    public virtual int value { get { return parts.Sum(); } }
-
-    public List<ItemTag> tags;    
+    public virtual int value { get { return parts.Sum(); } }    
 
     public ItemInst GetInst()
     {
@@ -126,13 +117,13 @@ public class ItemInstList : LinkedList<ItemInst>
         LinkedListNode<ItemInst> buff = First;
         while (buff != null)
         {
-            if (buff.Value.item.code < getItem.item.code)
+            if (int.Parse(buff.Value.item.code) < int.Parse(getItem.item.code))
             {
                 buff = buff.Next;
                 continue;
             }
 
-            if (getItem.item.code < buff.Value.item.code)
+            if (int.Parse(getItem.item.code) <  int.Parse(buff.Value.item.code))
             {
                 break;
             }

@@ -5,7 +5,7 @@ using UnityEngine.Events;
 [System.Serializable]
 public class ScenarioEvent : UnityEvent<ScenarioFlow> { }
 
-[CreateAssetMenu(fileName = "Scenario", menuName = "Scriptable Objects/Scenario/Scenario")]
+[CreateAssetMenu(fileName = "Scenario", menuName = "Scriptable Objects/Scenario")]
 public class Scenario_Scriptable : Scenario
 {
     [SerializeField] private string _scenarioCode;
