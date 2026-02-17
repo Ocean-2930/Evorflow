@@ -45,41 +45,29 @@ public abstract class SkillBase : ScriptableObject
     [SerializeField] private BoostValues boostValues;
     [SerializeField] private bool _isStatBoost = false;
 
-
     public virtual EnumIntArray<StatType> StatBoost(EnumIntArray<StatType> statpipe)
     {
         return statpipe + boostValues.Values();
     }
 
-    //public virtual int ScoutPassive()
-    //public virtual int ScoutActive()
+    //item passive?
 
-    //public virtual int SearchPassive()
-    //public virtual int SearchActive()
-
-    public virtual int isAttackPassive(UnitInst unit, ItemInst itemInst, DamageBox damagepipe)
+    [SerializeField] private BattleEvent _PassiveSkill;
+    public bool hasPassive { get { return _PassiveSkill != null && _PassiveSkill.GetPersistentEventCount() > 0; } }
+    public void ExecutePassiveSkill(BattleFlow bflow)
     {
-        return -1;
-    }
-    public virtual DamageBox VirtualAttackPassive(UnitInst unit, ItemInst itemInst, DamageBox damagepipe)
-    {
-        return new DamageBox();
-    }
-    public virtual DamageBox AttackPassive(UnitInst unit, ItemInst itemInst, DamageBox damagepipe)
-    {
-        return VirtualAttackPassive(unit, itemInst, damagepipe);
+        _PassiveSkill?.Invoke(bflow);
     }
 
-    public virtual int isAttackActive(UnitInst unit, ItemInst itemInst, List<UnitInst> target)
+    [SerializeField] private BattleEvent _ActiveSkill;
+    [SerializeField] private BattleEvent _ActiveChecker;
+    public bool hasActive { get { return _ActiveSkill != null && _ActiveSkill.GetPersistentEventCount() > 0; } }
+    public void ExecuteActiveSkill(BattleFlow bflow)
     {
-        return -1;
+        _ActiveSkill?.Invoke(bflow);
     }
-    public virtual DamageBox VirtualAttackActive(UnitInst unit, ItemInst itemInst, List<UnitInst> target)
+    public void ExecuteActiveCheck(BattleFlow bflow)
     {
-        return new DamageBox();
-    }
-    public virtual DamageBox AttackActive(UnitInst unit, ItemInst itemInst, List<UnitInst> target)
-    {
-        return VirtualAttackActive(unit, itemInst, target);
+        _ActiveChecker?.Invoke(bflow);
     }
 }
