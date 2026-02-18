@@ -59,15 +59,22 @@ public abstract class SkillBase : ScriptableObject
         _PassiveSkill?.Invoke(bflow);
     }
 
-    [SerializeField] private BattleEvent _ActiveSkill;
-    [SerializeField] private BattleEvent _ActiveChecker;
     public bool hasActive { get { return _ActiveSkill != null && _ActiveSkill.GetPersistentEventCount() > 0; } }
-    public void ExecuteActiveSkill(BattleFlow bflow)
-    {
-        _ActiveSkill?.Invoke(bflow);
-    }
+
+    [SerializeField] private BattleEvent _ActiveChecker;
+    [SerializeField] private BattleEvent _ActiveSelector;
+    [SerializeField] private BattleEvent _ActiveSkill;
+
     public void ExecuteActiveCheck(BattleFlow bflow)
     {
         _ActiveChecker?.Invoke(bflow);
+    }
+    public void ExecuteActiveSelector(BattleFlow bflow)
+    {
+        _ActiveSelector?.Invoke(bflow);
+    }
+    public void ExecuteActiveSkill(BattleFlow bflow)
+    {
+        _ActiveSkill?.Invoke(bflow);
     }
 }

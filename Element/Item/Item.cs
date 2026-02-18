@@ -24,21 +24,6 @@ public enum StackType
     durability = 1,
     stack = 2
 }
-
-public enum PartType
-{
-    food = 0,
-    parts = 1,
-    Mu7 = 2,
-    Rho3 = 3,
-    genebooster = 4,
-    cells = 5,
-    Quantum = 6,
-    Warpmatter = 7,
-    Ether = 8,
-    Radiomass = 9,
-    Tachyon = 10
-}
 #endregion
 
 #region Item
@@ -49,9 +34,6 @@ public abstract class Item : SkillBase
 
     public StackType stackType = StackType.None;
     public int stackMAXCnt = 1;
-
-    public EnumIntArray<PartType> parts = new EnumIntArray<PartType>();
-    public virtual int value { get { return parts.Sum(); } }    
 
     public ItemInst GetInst()
     {
