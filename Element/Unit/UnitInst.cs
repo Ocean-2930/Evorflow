@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -14,58 +15,56 @@ public enum StatType
     VIT = 7
 }
 
+public enum BattleTeam
+{
+    friendly = 0,
+    enemy = 1,
+    neutral = 2
+}
+
 public class UnitInst
 {
-    public Table table;
-        
+    private Unit_Scriptable _unitSource;
+    public Unit_Scriptable unitSource { get { return _unitSource; } }
+
+    private EnumIntArray<StatType> _baseStat = new EnumIntArray<StatType>();
+    public EnumIntArray<StatType> baseStat { get { return _baseStat; } }
+
+    public string code { get { return _unitSource.code; } }
+
+    public Sprite illust { get { return _unitSource.illust; } }
+
+    private Skill[] _skills = new Skill[4];
+    protected Skill[] skills { get { return _skills; } }
+
+    private ItemInst[] _items = new ItemInst[4];
+    protected ItemInst[] items { get { return _items; } }
+
     public EnumIntArray<StatType> stat
     {
         get
         {
             EnumIntArray<StatType> rarr = new EnumIntArray<StatType>();
 
-            if (baseSkill != null && baseSkill.isStatBoost)
+            for (int i = 0; i < _skills.Length; i++)
             {
-                rarr = baseSkill.StatBoost(rarr);
-            }
-            if (skill1 != null && skill1.isStatBoost)
-            {
-                rarr = skill1.StatBoost(rarr);
-            }
-            if (skill2 != null && skill2.isStatBoost)
-            {
-                rarr = skill2.StatBoost(rarr);
-            }
-            if (skill3 != null && skill3.isStatBoost)
-            {
-                rarr = skill3.StatBoost(rarr);
+                if (_skills[i] != null && _skills[i].isStatBoost)
+                {
+                    rarr = _skills[i].StatBoost(rarr);
+                }
             }
 
-            if (weapon != null && weapon.item.isStatBoost)
+            for (int i = 0; i < _items.Length; i++)
             {
-                rarr = weapon.item.StatBoost(rarr);
-            }
-            if (armor != null && armor.item.isStatBoost)
-            {
-                rarr = armor.item.StatBoost(rarr);
-            }
-            if (supply_1 != null && supply_1.item.isStatBoost)
-            {
-                rarr = supply_1.item.StatBoost(rarr);
-            }
-            if (supply_2 != null && supply_2.item.isStatBoost)
-            {
-                rarr = supply_2.item.StatBoost(rarr);
+                if (_items[i] != null && _items[i].item.isStatBoost)
+                {
+                    rarr = _items[i].item.StatBoost(rarr);
+                }
             }
 
-            return rarr + baseStat;
+            return rarr + _baseStat;
         }
     }
-
-    private EnumIntArray<StatType> baseStat = new EnumIntArray<StatType>();
-
-    public string code;
-    public Sprite illust;
 
     public UnitInst()
     {
@@ -74,29 +73,32 @@ public class UnitInst
 
     public UnitInst(SpecialUnit unit)
     {
-        code = unit.code;
-        illust = unit.illust;
+        _unitSource = unit;
 
-        baseStat = unit.baseStat;
+        _baseStat = unit.baseStat;
         baseSkill = unit.baseSkill;
         skill1 = unit.skill1;
         skill2 = unit.skill2;
         skill3 = unit.skill3;
     }
 
+    public UnitInst(UnitInst_Battle inst)
+    {
+        CopyFrom(inst);
+    }
+
     public UnitInst(UnitData data)
     {
-        code = data.code;
-        illust = UnitCloud.inst.GetUnit(code).illust;
+        _unitSource = UnitCloud.inst.GetUnit(data.code);
 
-        baseStat[(int)StatType.MAXHP] = data.MAXHP;
-        baseStat[(int)StatType.HP] = data.HP;
-        baseStat[(int)StatType.MAXCON] = data.MAXCON;
-        baseStat[(int)StatType.CON] = data.CON;
-        baseStat[(int)StatType.STR] = data.STR;
-        baseStat[(int)StatType.INT] = data.INT;
-        baseStat[(int)StatType.AGI] = data.AGI;
-        baseStat[(int)StatType.VIT] = data.VIT;
+        _baseStat[(int)StatType.MAXHP] = data.MAXHP;
+        _baseStat[(int)StatType.HP] = data.HP;
+        _baseStat[(int)StatType.MAXCON] = data.MAXCON;
+        _baseStat[(int)StatType.CON] = data.CON;
+        _baseStat[(int)StatType.STR] = data.STR;
+        _baseStat[(int)StatType.INT] = data.INT;
+        _baseStat[(int)StatType.AGI] = data.AGI;
+        _baseStat[(int)StatType.VIT] = data.VIT;
 
         if (data.baseSkill == "")
         {
@@ -121,20 +123,106 @@ public class UnitInst
         }
     }
 
-    public Skill baseSkill = null;
-    public Skill skill1 = null;
-    public Skill skill2 = null;
-    public Skill skill3 = null;
 
-    public ItemInst weapon = null;
-    public ItemInst armor = null;
-    public ItemInst supply_1 = null;
-    public ItemInst supply_2 = null;
+    protected void CopyFrom(UnitInst inst)
+    {
+        _unitSource = inst.unitSource;
+
+        _baseStat = new EnumIntArray<StatType>();
+        for (int i = 0; i < _baseStat.length; i++)
+        {
+            _baseStat[i] = inst.baseStat[i];
+        }
+
+        for (int i = 0; i < _skills.Length; i++)
+        {
+            _skills[i] = inst.skills[i];
+        }
+
+        for (int i = 0; i < _items.Length; i++)
+        {
+            _items[i] = inst.items[i] == null ? null : new ItemInst(inst.items[i]);
+        }
+    }
+
+    public Skill baseSkill { get { return _skills[0]; } set { _skills[0] = value; } }
+
+    public Skill skill1 { get { return _skills[1]; } set { _skills[1] = value; } }
+
+    public Skill skill2 { get { return _skills[2]; } set { _skills[2] = value; } }
+
+    public Skill skill3 { get { return _skills[3]; } set { _skills[3] = value; } }
+
+    public ItemInst weapon { get { return _items[0]; } set { _items[0] = value; } }
+
+    public ItemInst armor { get { return _items[1]; } set { _items[1] = value; } }
+
+    public ItemInst supply_1 { get { return _items[2]; } set { _items[2] = value; } }
+
+    public ItemInst supply_2 { get { return _items[3]; } set { _items[3] = value; } }
 
     //buff
 
     public void CallUnitInfoScreen()
     {
         Debug.Log("info screen printed");
+    }
+}
+
+public class UnitInst_Battle : UnitInst
+{
+    //Buff needed
+    private BattleTeam _team;
+    public BattleTeam team { get { return _team; } }
+
+    public UnitInst_Battle(UnitInst inst)
+    {
+        CopyFrom(inst);
+    }
+
+    public SkillBase[] GetActives()
+    {
+        List<SkillBase> rlist = new List<SkillBase>();
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            if (skills[i] != null && skills[i].hasActive)
+            {
+                rlist.Add(skills[i]);
+            }
+        }
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i] != null && items[i].item != null && items[i].item.hasActive)
+            {
+                rlist.Add(items[i].item);
+            }
+        }
+
+        return rlist.ToArray();
+    }
+
+    public SkillBase[] GetPassive()
+    {
+        List<SkillBase> rlist = new List<SkillBase>();
+
+        for (int i = 0; i < skills.Length; i++)
+        {
+            if (skills[i] != null && skills[i].hasPassive)
+            {
+                rlist.Add(skills[i]);
+            }
+        }
+
+        for (int i = 0; i < items.Length; i++)
+        {
+            if (items[i] != null && items[i].item != null && items[i].item.hasPassive)
+            {
+                rlist.Add(items[i].item);
+            }
+        }
+
+        return rlist.ToArray();
     }
 }
