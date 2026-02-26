@@ -75,6 +75,17 @@ public class ItemInst
             amount = data.amount;
         }
     }
+
+    public ItemInst(ItemInst src)
+    {
+        if (src == null)
+        {
+            return;
+        }
+
+        item = src.item;
+        amount = src.amount;
+    }
 }
 
 public class ItemInstList : LinkedList<ItemInst>
