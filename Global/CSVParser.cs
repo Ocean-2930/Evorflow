@@ -9,6 +9,11 @@ public class CSVParser
     public CSVParser(string directory)
     {
         TextAsset csvFile = Resources.Load<TextAsset>(directory);
+        if (csvFile == null)
+        {
+            throw new FileNotFoundException($"CSV file could not be loaded from Resources path: {directory}");
+        }
+
         StringReader reader = new StringReader(csvFile.text);
         string csvText = reader.ReadToEnd();
         data = csvText.Split('\n');

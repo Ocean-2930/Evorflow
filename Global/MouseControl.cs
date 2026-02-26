@@ -1,6 +1,5 @@
-﻿using NUnit.Framework;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,15 +7,29 @@ public class MouseControl : SceneSingleton<MouseControl>
 {
     public override string className => "MouseControl";
 
-    public static MouseControl instance;
 
     [SerializeField] private GameObject sceneCanvas;
     private List<CustomMouseTrigger> customMCList = new List<CustomMouseTrigger>();
+
+    private void Awake()
+    {
+        if (sceneCanvas == null)
+        {
+            sceneCanvas = gameObject.scene.GetRootGameObjects()
+                .SelectMany(root => root.GetComponentsInChildren<Canvas>(true))
+                .FirstOrDefault()?.gameObject;
+        }
+    }
     private CustomMouseTrigger currentFocus = null;
     private CustomMouseTrigger grabObject;
 
     void Update()
     {
+        if (Mouse.current == null)
+        {
+            return;
+        }
+
         Vector2 mousePos = Mouse.current.position.ReadValue();
 
         if (grabObject != null)
@@ -65,7 +78,14 @@ public class MouseControl : SceneSingleton<MouseControl>
         }
         else
         {
-            focus = FindCMI(sceneCanvas.transform, candidate);
+            if (sceneCanvas == null)
+            {
+                focus = candidate[0];
+            }
+            else
+            {
+                focus = FindCMI(sceneCanvas.transform, candidate);
+            }
         }
 
         if (grabObject != null)
