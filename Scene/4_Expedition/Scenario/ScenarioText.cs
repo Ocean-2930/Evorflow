@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,6 +15,8 @@ public enum Language
 
 public class ScenarioText : MonoBehaviour
 {
+    public event Action PartyChanged;
+
     [SerializeField] private GameObject optionPin;
     private RectTransform _optionTransform;
     private RectTransform optionTransform
@@ -65,9 +66,6 @@ public class ScenarioText : MonoBehaviour
     public bool tableOpened { get { return partyTable.activeInHierarchy; } }
 
     [SerializeField] private float optionSpacing = 140.0f;
-    private Coroutine scenarioLoop = null;
-    private int optionPipe = -1;
-    private bool partyUpdated = false;
 
     private CustomScrollUI_Manual _scrollUI;
     private CustomScrollUI_Manual scrollUI
@@ -84,78 +82,9 @@ public class ScenarioText : MonoBehaviour
         }
     }
 
-    public void StartScenario(Scenario first)
-    {
-        if (scenarioLoop == null) { scenarioLoop = StartCoroutine(ScenarioLoop(first)); }
-    }
+    public Table partyTableData { get { return ptable.tableData; } }
 
-    public void Option(int option)
-    {
-        optionPipe = option;
-    }
-
-    private IEnumerator ScenarioLoop(Scenario first)
-    {
-        ScenarioFlow sflow = new ScenarioFlow(this, first);
-
-        while (!sflow.scenarioEnd)
-        {
-            IEnumerator enumerator = sflow.GetEnumerator();
-            yield return enumerator;
-            sflow.SafeProceed();
-        }
-        
-        scenarioLoop = null;
-    }
-
-    public IEnumerator ScenarioGeneral(ScenarioFlow sflow)
-    {
-        Scenario_Scriptable scenario = (Scenario_Scriptable)sflow.currentScenario;
-
-        AddTextBox(scenario.GetScript());
-        optionPipe = -1;
-
-        string[] options = sflow.GetOptions();
-        OpenOptions(options);
-
-        yield return new WaitUntil(() => optionPipe != -1);
-        
-        CleanOptions();
-        sflow.Proceed(((options.Length != 0) ? options[optionPipe] : ""));
-        yield return null;
-    }
-
-    public IEnumerator ScenarioTable(ScenarioFlow sflow)
-    {
-        AddTextBox(sflow.currentScenario.GetScript());
-        optionPipe = -1;
-
-        OpenTable();
-
-        
-        while(true)
-        {
-            CleanOptions();
-            string[] options = sflow.GetOptions(ptable.tableData);
-            OpenOptions(options);
-
-            yield return new WaitUntil(() => partyUpdated || optionPipe != -1);
-
-            partyUpdated = false;
-            if (optionPipe != -1)
-            {
-                sflow.Proceed(options[optionPipe]);
-                break;
-            }
-        }
-
-        CleanOptions();
-        CloseTable();
-
-        yield return null;
-    }
-
-    private void OpenOptions(string[] inoptions)
+    public void OpenOptions(string[] inoptions, Action<int> onOption)
     {
         string[] options;
         if (inoptions.Length == 0) { options = new string[1]; options[0] = "No Text"; }
@@ -166,7 +95,7 @@ public class ScenarioText : MonoBehaviour
         {
             string optionText = options[i];
             GameObject obj = Instantiate(optionBox);
-            obj.GetComponent<OptionBox>().Initialize(this, i, optionText);
+            obj.GetComponent<OptionBox>().Initialize(onOption, i, optionText);
             RectTransform rect = obj.GetComponent<RectTransform>();
             rect.SetParent(optionTransform);
             rect.anchoredPosition = new Vector3(0, ypos, 0);
@@ -174,7 +103,7 @@ public class ScenarioText : MonoBehaviour
         }
     }
 
-    private void CleanOptions()
+    public void CleanOptions()
     {
         for (int i = optionTransform.childCount - 1; i >= 0; i--)
         {
@@ -182,7 +111,7 @@ public class ScenarioText : MonoBehaviour
         }
     }
 
-    private void OpenTable()
+    public void OpenTable()
     {
         partyTable.SetActive(true);
     }
@@ -193,7 +122,7 @@ public class ScenarioText : MonoBehaviour
         {
             return;
         }
-        partyUpdated = true;
+        PartyChanged?.Invoke();
         ptable.AddUnit(unit);
     }
 
@@ -203,11 +132,11 @@ public class ScenarioText : MonoBehaviour
         {
             return;
         }
-        partyUpdated = true;
+        PartyChanged?.Invoke();
         ptable.RemoveUnit(unit);
     }
 
-    private void CloseTable()
+    public void CloseTable()
     {
         ptable.CleanTable();
         btable.CleanTable();
