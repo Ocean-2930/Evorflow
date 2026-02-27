@@ -175,9 +175,44 @@ public class UnitInst_Battle : UnitInst
     private BattleTeam _team;
     public BattleTeam team { get { return _team; } }
 
-    public UnitInst_Battle(UnitInst inst)
+    private TokenTile _tile;
+    public TokenTile tile
+    {
+        get { return _tile; }
+        set
+        {
+            if (_tile == value)
+            {
+                return;
+            }
+
+            if (_tile != null)
+            {
+                TokenTile oldTile = _tile;
+                _tile = null;
+
+                if (oldTile.unit == this)
+                {
+                    oldTile.unit = null;
+                }
+            }
+
+            if (value != null && value.unit != this)
+            {
+                value.unit = this;
+            }
+
+            _tile = value;
+        }
+    }
+
+    public int xpos { get { return _tile == null ? -1 : _tile.xpos; } }
+    public int ypos { get { return _tile == null ? -1 : _tile.ypos; } }
+
+    public UnitInst_Battle(UnitInst inst, BattleTeam team)
     {
         CopyFrom(inst);
+        _team = team;
     }
 
     public SkillBase[] GetActives()
