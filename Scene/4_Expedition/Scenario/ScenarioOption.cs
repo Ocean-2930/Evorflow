@@ -7,10 +7,10 @@ public class OptionBox : MonoBehaviour, ICustomMouseInterface
     [SerializeField] private GameObject maskField;
     [SerializeField] private GameObject textField;
 
-    private ScenarioText reportTo;
+    private System.Action<int> reportTo;
     private int optionIndex = -1;
 
-    public void Initialize(ScenarioText from, int opindex, string text)
+    public void Initialize(System.Action<int> from, int opindex, string text)
     {
         reportTo = from;
         optionIndex = opindex;
@@ -35,7 +35,7 @@ public class OptionBox : MonoBehaviour, ICustomMouseInterface
 
     public void OnLeftClick()
     {
-        reportTo.Option(optionIndex);
+        reportTo?.Invoke(optionIndex);
     }
 }
 

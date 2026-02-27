@@ -30,7 +30,7 @@ public class Scenario_Scriptable : Scenario
 
     public override IEnumerator GetEnumerator(ScenarioFlow flow)
     {
-        return (type == ScenarioInput.General) ? flow.scenarioText.ScenarioGeneral(flow) : flow.scenarioText.ScenarioTable(flow);
+        return (type == ScenarioInput.General) ? ScenarioControl.inst.ScenarioGeneral(flow) : ScenarioControl.inst.ScenarioTable(flow);
     }
 
     [SerializeField] private ScenarioEvent _GetOptions;

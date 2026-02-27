@@ -6,14 +6,13 @@ using UnityEngine;
 
 public class ScenarioFlow
 {
-    public ScenarioFlow(ScenarioText stext, Scenario first)
+    public ScenarioFlow(Scenario first)
     {
-        _stext = stext;
         pipeline.AddFirst(first);
         pipelineFlag = pipeline.First;
     }
 
-    #region ScenarioText
+    #region ScenarioControl
     public bool scenarioEnd
     {
         get
@@ -90,11 +89,6 @@ public class ScenarioFlow
     private List<string> items = new List<string>();
     private List<string> tags = new List<string>();
 
-    private ScenarioText _stext;
-    public ScenarioText scenarioText
-    {
-        get { return _stext; }
-    }
 
     public void AddTag(string newTag)
     {
