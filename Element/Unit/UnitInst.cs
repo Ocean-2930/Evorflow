@@ -71,6 +71,13 @@ public class UnitInst
 
     }
 
+    public UnitInst(Unit_Scriptable unit)
+    {
+        _unitSource = unit;
+
+        _baseStat = unit.baseStat;
+    }
+
     public UnitInst(SpecialUnit unit)
     {
         _unitSource = unit;
@@ -213,6 +220,22 @@ public class UnitInst_Battle : UnitInst
     {
         CopyFrom(inst);
         _team = team;
+    }
+
+
+    public UnitInst_Battle(Enemy enemy, BattleTeam team)
+    {
+        CopyFrom(new UnitInst(enemy as Unit_Scriptable));
+        _team = team;
+
+        if (enemy.skills != null)
+        {
+            int count = enemy.skills.Count > skills.Length ? skills.Length : enemy.skills.Count;
+            for (int i = 0; i < count; i++)
+            {
+                skills[i] = enemy.skills[i];
+            }
+        }
     }
 
     public SkillBase[] GetActives()
