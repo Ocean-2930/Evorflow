@@ -82,7 +82,7 @@ public class BattleControl : SceneSingleton<BattleControl>
         return _turnCounterSpeed[index];
     }
 
-    private UnitInst_Battle NextTrun()
+    private UnitInst_Battle PopUnit()
     {
         UnitInst_Battle selectedUnit = null;
         bool selectedIsEnemy = false;
@@ -122,14 +122,13 @@ public class BattleControl : SceneSingleton<BattleControl>
 
         if (readyCount == 1 && selectedUnit != null)
         {
-            for (int i = 0; i < turnCounterFriendly.Count; i++)
+            if (selectedIsEnemy)
             {
-                turnCounterFriendly[i] += TURNCOUNTERMAX;
+                turnCounterEnemy[selectedIndex] += TURNCOUNTERMAX;
             }
-
-            for (int i = 0; i < turnCounterEnemy.Count; i++)
+            else
             {
-                turnCounterEnemy[i] += TURNCOUNTERMAX;
+                turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
             }
 
             return selectedUnit;
@@ -146,6 +145,17 @@ public class BattleControl : SceneSingleton<BattleControl>
                 turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
             }
 
+            return selectedUnit;
+        }
+
+        return null;
+    }
+
+    private UnitInst_Battle NextTrun()
+    {
+        UnitInst_Battle selectedUnit = PopUnit();
+        if (selectedUnit != null)
+        {
             return selectedUnit;
         }
 
@@ -190,72 +200,7 @@ public class BattleControl : SceneSingleton<BattleControl>
             }
         }
 
-        selectedUnit = null;
-        selectedIsEnemy = false;
-        selectedIndex = -1;
-        readyCount = 0;
-        minReadyCounter = int.MaxValue;
-
-        for (int i = 0; i < unitFriendly.Count && i < turnCounterFriendly.Count; i++)
-        {
-            if (turnCounterFriendly[i] <= 0)
-            {
-                readyCount++;
-                if (turnCounterFriendly[i] < minReadyCounter)
-                {
-                    minReadyCounter = turnCounterFriendly[i];
-                    selectedUnit = unitFriendly[i];
-                    selectedIsEnemy = false;
-                    selectedIndex = i;
-                }
-            }
-        }
-
-        for (int i = 0; i < unitEnemy.Count && i < turnCounterEnemy.Count; i++)
-        {
-            if (turnCounterEnemy[i] <= 0)
-            {
-                readyCount++;
-                if (turnCounterEnemy[i] < minReadyCounter)
-                {
-                    minReadyCounter = turnCounterEnemy[i];
-                    selectedUnit = unitEnemy[i];
-                    selectedIsEnemy = true;
-                    selectedIndex = i;
-                }
-            }
-        }
-
-        if (readyCount == 1 && selectedUnit != null)
-        {
-            for (int i = 0; i < turnCounterFriendly.Count; i++)
-            {
-                turnCounterFriendly[i] += TURNCOUNTERMAX;
-            }
-
-            for (int i = 0; i < turnCounterEnemy.Count; i++)
-            {
-                turnCounterEnemy[i] += TURNCOUNTERMAX;
-            }
-
-            return selectedUnit;
-        }
-
-        if (readyCount > 1 && selectedUnit != null)
-        {
-            if (selectedIsEnemy)
-            {
-                turnCounterEnemy[selectedIndex] += TURNCOUNTERMAX;
-            }
-            else
-            {
-                turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
-            }
-
-            return selectedUnit;
-        }
-
-        return null;
+        return PopUnit();
     }
 
     public void LoadBackup()
