@@ -11,12 +11,12 @@ public class BattleControl : SceneSingleton<BattleControl>
     private List<UnitInst_Battle> unitFriendly;
     private List<UnitInst_Battle> unitEnemy;
 
-    private float TURNCOUNTERMAX = 100f;
+    private int TURNCOUNTERMAX = 10000;
 
-    public List<float> turnCounterFriendly;
-    public List<float> turnCounterEnemy;
+    public List<int> turnCounterFriendly;
+    public List<int> turnCounterEnemy;
 
-    private List<float> _turnCounterSpeed;
+    private List<int> _turnCounterSpeed = new List<int> { 125, 156, 200, 250, 312, 400, 500, 624 };
 
     private IEnumerator _nextCoroutine;
     public IEnumerator nextCoroutine
@@ -41,14 +41,6 @@ public class BattleControl : SceneSingleton<BattleControl>
 
         backupFriendly = new List<UnitInst_Battle>();
         backupEnemy = new List<UnitInst_Battle>();
-
-        _turnCounterSpeed = new List<float>();
-        float turnCounterSpeedValue = 1f;
-        for (int i = 0; i < 8; i++)
-        {
-            _turnCounterSpeed.Add(turnCounterSpeedValue);
-            turnCounterSpeedValue *= 1.25f;
-        }
 
         if (inven != null)
         {
@@ -76,11 +68,15 @@ public class BattleControl : SceneSingleton<BattleControl>
         StartCoroutine(MainLoop(new BattleFlow()));
     }
 
-    private float TurnCounterSpeed(int index)
+    private int TurnCounterSpeed(int agi)
     {
+        int index = agi - 1;
+        if (index < 0) { index = 0; }
+
         while (_turnCounterSpeed.Count <= index)
         {
-            _turnCounterSpeed.Add(_turnCounterSpeed[_turnCounterSpeed.Count - 1] * 1.25f);
+            int nextIndex = _turnCounterSpeed.Count;
+            _turnCounterSpeed.Add(_turnCounterSpeed[nextIndex - 3] * 2);
         }
 
         return _turnCounterSpeed[index];
@@ -88,87 +84,178 @@ public class BattleControl : SceneSingleton<BattleControl>
 
     private UnitInst_Battle NextTrun()
     {
-        UnitInst_Battle nextUnit = null;
-        bool isEnemy = false;
-        int nextIndex = -1;
-        float minNeedCounter = float.MaxValue;
+        UnitInst_Battle selectedUnit = null;
+        bool selectedIsEnemy = false;
+        int selectedIndex = -1;
+        int readyCount = 0;
+        int minReadyCounter = int.MaxValue;
 
         for (int i = 0; i < unitFriendly.Count && i < turnCounterFriendly.Count; i++)
         {
-            int speedIndex = unitFriendly[i].stat[StatType.AGI] - 1;
-            if (speedIndex < 0) { speedIndex = 0; }
-
-            float speed = TurnCounterSpeed(speedIndex);
-            float needCounter = turnCounterFriendly[i] / speed;
-
-            if (needCounter < minNeedCounter)
+            if (turnCounterFriendly[i] <= 0)
             {
-                minNeedCounter = needCounter;
-                nextUnit = unitFriendly[i];
-                isEnemy = false;
-                nextIndex = i;
+                readyCount++;
+                if (turnCounterFriendly[i] < minReadyCounter)
+                {
+                    minReadyCounter = turnCounterFriendly[i];
+                    selectedUnit = unitFriendly[i];
+                    selectedIsEnemy = false;
+                    selectedIndex = i;
+                }
             }
         }
 
         for (int i = 0; i < unitEnemy.Count && i < turnCounterEnemy.Count; i++)
         {
-            int speedIndex = unitEnemy[i].stat[StatType.AGI] - 1;
-            if (speedIndex < 0) { speedIndex = 0; }
-
-            float speed = TurnCounterSpeed(speedIndex);
-            float needCounter = turnCounterEnemy[i] / speed;
-
-            if (needCounter < minNeedCounter)
+            if (turnCounterEnemy[i] <= 0)
             {
-                minNeedCounter = needCounter;
-                nextUnit = unitEnemy[i];
-                isEnemy = true;
-                nextIndex = i;
+                readyCount++;
+                if (turnCounterEnemy[i] < minReadyCounter)
+                {
+                    minReadyCounter = turnCounterEnemy[i];
+                    selectedUnit = unitEnemy[i];
+                    selectedIsEnemy = true;
+                    selectedIndex = i;
+                }
             }
         }
 
-        if (nextUnit == null || nextIndex < 0)
+        if (readyCount == 1 && selectedUnit != null)
         {
-            return null;
+            for (int i = 0; i < turnCounterFriendly.Count; i++)
+            {
+                turnCounterFriendly[i] += TURNCOUNTERMAX;
+            }
+
+            for (int i = 0; i < turnCounterEnemy.Count; i++)
+            {
+                turnCounterEnemy[i] += TURNCOUNTERMAX;
+            }
+
+            return selectedUnit;
         }
 
-        int nextSpeedIndex = nextUnit.stat[StatType.AGI] - 1;
-        if (nextSpeedIndex < 0) { nextSpeedIndex = 0; }
-
-        float nextSpeed = TurnCounterSpeed(nextSpeedIndex);
-        float nextCounter = isEnemy ? turnCounterEnemy[nextIndex] : turnCounterFriendly[nextIndex];
-        int speedMultiply = Mathf.CeilToInt(nextCounter / nextSpeed);
-        if (speedMultiply < 1)
+        if (readyCount > 1 && selectedUnit != null)
         {
-            speedMultiply = 1;
+            if (selectedIsEnemy)
+            {
+                turnCounterEnemy[selectedIndex] += TURNCOUNTERMAX;
+            }
+            else
+            {
+                turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
+            }
+
+            return selectedUnit;
         }
+
+        List<int> friendlySpeed = new List<int>();
+        List<int> enemySpeed = new List<int>();
 
         for (int i = 0; i < unitFriendly.Count && i < turnCounterFriendly.Count; i++)
         {
-            int speedIndex = unitFriendly[i].stat[StatType.AGI] - 1;
-            if (speedIndex < 0) { speedIndex = 0; }
-
-            turnCounterFriendly[i] -= TurnCounterSpeed(speedIndex) * speedMultiply;
+            friendlySpeed.Add(TurnCounterSpeed(unitFriendly[i].stat[StatType.AGI]));
         }
 
         for (int i = 0; i < unitEnemy.Count && i < turnCounterEnemy.Count; i++)
         {
-            int speedIndex = unitEnemy[i].stat[StatType.AGI] - 1;
-            if (speedIndex < 0) { speedIndex = 0; }
-
-            turnCounterEnemy[i] -= TurnCounterSpeed(speedIndex) * speedMultiply;
+            enemySpeed.Add(TurnCounterSpeed(unitEnemy[i].stat[StatType.AGI]));
         }
 
-        if (isEnemy)
+        while (true)
         {
-            turnCounterEnemy[nextIndex] += TURNCOUNTERMAX;
-        }
-        else
-        {
-            turnCounterFriendly[nextIndex] += TURNCOUNTERMAX;
+            bool hasReadyAfterTick = false;
+
+            for (int i = 0; i < turnCounterFriendly.Count && i < friendlySpeed.Count; i++)
+            {
+                turnCounterFriendly[i] -= friendlySpeed[i];
+                if (turnCounterFriendly[i] <= 0)
+                {
+                    hasReadyAfterTick = true;
+                }
+            }
+
+            for (int i = 0; i < turnCounterEnemy.Count && i < enemySpeed.Count; i++)
+            {
+                turnCounterEnemy[i] -= enemySpeed[i];
+                if (turnCounterEnemy[i] <= 0)
+                {
+                    hasReadyAfterTick = true;
+                }
+            }
+
+            if (hasReadyAfterTick)
+            {
+                break;
+            }
         }
 
-        return nextUnit;
+        selectedUnit = null;
+        selectedIsEnemy = false;
+        selectedIndex = -1;
+        readyCount = 0;
+        minReadyCounter = int.MaxValue;
+
+        for (int i = 0; i < unitFriendly.Count && i < turnCounterFriendly.Count; i++)
+        {
+            if (turnCounterFriendly[i] <= 0)
+            {
+                readyCount++;
+                if (turnCounterFriendly[i] < minReadyCounter)
+                {
+                    minReadyCounter = turnCounterFriendly[i];
+                    selectedUnit = unitFriendly[i];
+                    selectedIsEnemy = false;
+                    selectedIndex = i;
+                }
+            }
+        }
+
+        for (int i = 0; i < unitEnemy.Count && i < turnCounterEnemy.Count; i++)
+        {
+            if (turnCounterEnemy[i] <= 0)
+            {
+                readyCount++;
+                if (turnCounterEnemy[i] < minReadyCounter)
+                {
+                    minReadyCounter = turnCounterEnemy[i];
+                    selectedUnit = unitEnemy[i];
+                    selectedIsEnemy = true;
+                    selectedIndex = i;
+                }
+            }
+        }
+
+        if (readyCount == 1 && selectedUnit != null)
+        {
+            for (int i = 0; i < turnCounterFriendly.Count; i++)
+            {
+                turnCounterFriendly[i] += TURNCOUNTERMAX;
+            }
+
+            for (int i = 0; i < turnCounterEnemy.Count; i++)
+            {
+                turnCounterEnemy[i] += TURNCOUNTERMAX;
+            }
+
+            return selectedUnit;
+        }
+
+        if (readyCount > 1 && selectedUnit != null)
+        {
+            if (selectedIsEnemy)
+            {
+                turnCounterEnemy[selectedIndex] += TURNCOUNTERMAX;
+            }
+            else
+            {
+                turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
+            }
+
+            return selectedUnit;
+        }
+
+        return null;
     }
 
     public void LoadBackup()
@@ -200,8 +287,8 @@ public class BattleControl : SceneSingleton<BattleControl>
             unitEnemy.Add(new UnitInst_Battle(backupEnemy[i], BattleTeam.enemy));
         }
 
-        turnCounterFriendly = new List<float>();
-        turnCounterEnemy = new List<float>();
+        turnCounterFriendly = new List<int>();
+        turnCounterEnemy = new List<int>();
 
         for (int i = 0; i < unitFriendly.Count; i++)
         {
