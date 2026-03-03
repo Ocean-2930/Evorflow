@@ -87,68 +87,47 @@ public class BattleControl : SceneSingleton<BattleControl>
         UnitInst_Battle selectedUnit = null;
         bool selectedIsEnemy = false;
         int selectedIndex = -1;
-        int readyCount = 0;
         int minReadyCounter = int.MaxValue;
 
         for (int i = 0; i < unitFriendly.Count && i < turnCounterFriendly.Count; i++)
         {
-            if (turnCounterFriendly[i] <= 0)
+            int c = turnCounterFriendly[i];
+            if (c <= 0 && c < minReadyCounter)
             {
-                readyCount++;
-                if (turnCounterFriendly[i] < minReadyCounter)
-                {
-                    minReadyCounter = turnCounterFriendly[i];
-                    selectedUnit = unitFriendly[i];
-                    selectedIsEnemy = false;
-                    selectedIndex = i;
-                }
+                minReadyCounter = c;
+                selectedUnit = unitFriendly[i];
+                selectedIsEnemy = false;
+                selectedIndex = i;
             }
         }
 
         for (int i = 0; i < unitEnemy.Count && i < turnCounterEnemy.Count; i++)
         {
-            if (turnCounterEnemy[i] <= 0)
+            int c = turnCounterEnemy[i];
+            if (c <= 0 && c < minReadyCounter)
             {
-                readyCount++;
-                if (turnCounterEnemy[i] < minReadyCounter)
-                {
-                    minReadyCounter = turnCounterEnemy[i];
-                    selectedUnit = unitEnemy[i];
-                    selectedIsEnemy = true;
-                    selectedIndex = i;
-                }
+                minReadyCounter = c;
+                selectedUnit = unitEnemy[i];
+                selectedIsEnemy = true;
+                selectedIndex = i;
             }
         }
 
-        if (readyCount == 1 && selectedUnit != null)
+        if (selectedUnit == null)
         {
-            if (selectedIsEnemy)
-            {
-                turnCounterEnemy[selectedIndex] += TURNCOUNTERMAX;
-            }
-            else
-            {
-                turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
-            }
-
-            return selectedUnit;
+            return null;
         }
 
-        if (readyCount > 1 && selectedUnit != null)
+        if (selectedIsEnemy)
         {
-            if (selectedIsEnemy)
-            {
-                turnCounterEnemy[selectedIndex] += TURNCOUNTERMAX;
-            }
-            else
-            {
-                turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
-            }
-
-            return selectedUnit;
+            turnCounterEnemy[selectedIndex] += TURNCOUNTERMAX;
+        }
+        else
+        {
+            turnCounterFriendly[selectedIndex] += TURNCOUNTERMAX;
         }
 
-        return null;
+        return selectedUnit;
     }
 
     private UnitInst_Battle NextTrun()
@@ -172,32 +151,59 @@ public class BattleControl : SceneSingleton<BattleControl>
             enemySpeed.Add(TurnCounterSpeed(unitEnemy[i].stat[StatType.AGI]));
         }
 
-        while (true)
+        int needTick = int.MaxValue;
+
+        for (int i = 0; i < turnCounterFriendly.Count && i < friendlySpeed.Count; i++)
         {
-            bool hasReadyAfterTick = false;
-
-            for (int i = 0; i < turnCounterFriendly.Count && i < friendlySpeed.Count; i++)
+            int c = turnCounterFriendly[i];
+            if (c > 0)
             {
-                turnCounterFriendly[i] -= friendlySpeed[i];
-                if (turnCounterFriendly[i] <= 0)
+                int speed = friendlySpeed[i];
+                int tick = c / speed;
+                if (c % speed != 0)
                 {
-                    hasReadyAfterTick = true;
+                    tick += 1;
+                }
+
+                if (tick < needTick)
+                {
+                    needTick = tick;
                 }
             }
+        }
 
-            for (int i = 0; i < turnCounterEnemy.Count && i < enemySpeed.Count; i++)
+        for (int i = 0; i < turnCounterEnemy.Count && i < enemySpeed.Count; i++)
+        {
+            int c = turnCounterEnemy[i];
+            if (c > 0)
             {
-                turnCounterEnemy[i] -= enemySpeed[i];
-                if (turnCounterEnemy[i] <= 0)
+                int speed = enemySpeed[i];
+                int tick = c / speed;
+                if (c % speed != 0)
                 {
-                    hasReadyAfterTick = true;
+                    tick += 1;
+                }
+
+                if (tick < needTick)
+                {
+                    needTick = tick;
                 }
             }
+        }
 
-            if (hasReadyAfterTick)
-            {
-                break;
-            }
+        if (needTick == int.MaxValue)
+        {
+            needTick = 1;
+        }
+
+        for (int i = 0; i < turnCounterFriendly.Count && i < friendlySpeed.Count; i++)
+        {
+            turnCounterFriendly[i] -= needTick * friendlySpeed[i];
+        }
+
+        for (int i = 0; i < turnCounterEnemy.Count && i < enemySpeed.Count; i++)
+        {
+            turnCounterEnemy[i] -= needTick * enemySpeed[i];
         }
 
         return PopUnit();
